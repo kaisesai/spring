@@ -63,6 +63,9 @@ import org.springframework.beans.BeansException;
 public interface BeanFactoryPostProcessor {
 
 	/**
+	 * 在它标准初始化之后，修改应用程序上下文的内部 bean 工厂。所有的 bean 定义将会被加载，但是
+	 * 任然没有 bean 会被初始化。这允许进行重写或者添加属性，甚至可以进行初始化 bean
+	 *
 	 * Modify the application context's internal bean factory after its standard
 	 * initialization. All bean definitions will have been loaded, but no beans
 	 * will have been instantiated yet. This allows for overriding or adding

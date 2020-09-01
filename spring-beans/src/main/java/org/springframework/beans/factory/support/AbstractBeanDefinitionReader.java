@@ -196,6 +196,8 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 	}
 
 	/**
+	 * 从指定的资源路径上，加载 bean 定义
+	 *
 	 * Load bean definitions from the specified resource location.
 	 * <p>The location can also be a location pattern, provided that the
 	 * ResourceLoader of this bean definition reader is a ResourcePatternResolver.
@@ -221,6 +223,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 			// Resource pattern matching available.
 			try {
 				Resource[] resources = ((ResourcePatternResolver) resourceLoader).getResources(location);
+				// 通过资源模式解析器来加载
 				int count = loadBeanDefinitions(resources);
 				if (actualResources != null) {
 					Collections.addAll(actualResources, resources);
@@ -236,6 +239,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 			}
 		}
 		else {
+			// 仅仅从单个资源文件上加载 bean 定义
 			// Can only load single resources by absolute URL.
 			Resource resource = resourceLoader.getResource(location);
 			int count = loadBeanDefinitions(resource);

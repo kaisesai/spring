@@ -35,6 +35,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringValueResolver;
 
 /**
+ * 应用程序上下文 aware 后置处理器，用于给一些实现以下一些 aware 接口的实现类，设置各种属性，比如
+ * ApplicationContext、Environment
+ *
  * {@link BeanPostProcessor} implementation that supplies the {@code ApplicationContext},
  * {@link org.springframework.core.env.Environment Environment}, or
  * {@link StringValueResolver} for the {@code ApplicationContext} to beans that

@@ -150,6 +150,8 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 
 
 	/**
+	 * 执行代理
+	 *
 	 * Implementation of {@code InvocationHandler.invoke}.
 	 * <p>Callers will see exactly the exception thrown by the target,
 	 * unless a hook method throws an exception.
@@ -165,6 +167,7 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 
 		try {
 			if (!this.equalsDefined && AopUtils.isEqualsMethod(method)) {
+				// equals 方法
 				// The target does not implement the equals(Object) method itself.
 				return equals(args[0]);
 			}

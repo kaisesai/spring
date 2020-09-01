@@ -110,6 +110,8 @@ class ConstructorResolver {
 
 
 	/**
+	 * 构造器注入
+	 *
 	 * "autowire constructor" (with constructor arguments by type) behavior.
 	 * Also applied if explicit constructor argument values are specified,
 	 * matching all remaining arguments with beans from the bean factory.
@@ -126,6 +128,7 @@ class ConstructorResolver {
 	public BeanWrapper autowireConstructor(String beanName, RootBeanDefinition mbd,
 			@Nullable Constructor<?>[] chosenCtors, @Nullable Object[] explicitArgs) {
 
+		// 创建 bean 包装器
 		BeanWrapperImpl bw = new BeanWrapperImpl();
 		this.beanFactory.initBeanWrapper(bw);
 
@@ -133,6 +136,7 @@ class ConstructorResolver {
 		ArgumentsHolder argsHolderToUse = null;
 		Object[] argsToUse = null;
 
+		// 解析构造器参数
 		if (explicitArgs != null) {
 			argsToUse = explicitArgs;
 		}
@@ -149,6 +153,7 @@ class ConstructorResolver {
 				}
 			}
 			if (argsToResolve != null) {
+				// 解析预置参数
 				argsToUse = resolvePreparedArguments(beanName, mbd, bw, constructorToUse, argsToResolve, true);
 			}
 		}
@@ -292,6 +297,7 @@ class ConstructorResolver {
 		}
 
 		Assert.state(argsToUse != null, "Unresolved constructor arguments");
+		// 实例化 bean
 		bw.setBeanInstance(instantiate(beanName, mbd, constructorToUse, argsToUse));
 		return bw;
 	}
@@ -303,6 +309,7 @@ class ConstructorResolver {
 			InstantiationStrategy strategy = this.beanFactory.getInstantiationStrategy();
 			if (System.getSecurityManager() != null) {
 				return AccessController.doPrivileged((PrivilegedAction<Object>) () ->
+						// 通过构造器实例化 bean
 						strategy.instantiate(mbd, beanName, this.beanFactory, constructorToUse, argsToUse),
 						this.beanFactory.getAccessControlContext());
 			}
@@ -376,6 +383,8 @@ class ConstructorResolver {
 	}
 
 	/**
+	 * 使用工厂方法实例化 bean
+	 *
 	 * Instantiate the bean using a named factory method. The method may be static, if the
 	 * bean definition parameter specifies a class, rather than a "factory-bean", or
 	 * an instance variable on a factory object itself configured using Dependency Injection.
@@ -393,6 +402,7 @@ class ConstructorResolver {
 	public BeanWrapper instantiateUsingFactoryMethod(
 			String beanName, RootBeanDefinition mbd, @Nullable Object[] explicitArgs) {
 
+		// 创建 bean 包装器，并且初始化
 		BeanWrapperImpl bw = new BeanWrapperImpl();
 		this.beanFactory.initBeanWrapper(bw);
 
@@ -406,6 +416,7 @@ class ConstructorResolver {
 				throw new BeanDefinitionStoreException(mbd.getResourceDescription(), beanName,
 						"factory-bean reference points back to the same bean definition");
 			}
+			// 获取出一个工厂 bean
 			factoryBean = this.beanFactory.getBean(factoryBeanName);
 			if (mbd.isSingleton() && this.beanFactory.containsSingleton(beanName)) {
 				throw new ImplicitlyAppearedSingletonException();
@@ -414,6 +425,7 @@ class ConstructorResolver {
 			isStatic = false;
 		}
 		else {
+			// 它是一个静态工厂方法
 			// It's a static factory method on the bean class.
 			if (!mbd.hasBeanClass()) {
 				throw new BeanDefinitionStoreException(mbd.getResourceDescription(), beanName,
@@ -428,6 +440,7 @@ class ConstructorResolver {
 		ArgumentsHolder argsHolderToUse = null;
 		Object[] argsToUse = null;
 
+		// 构造器参数解析
 		if (explicitArgs != null) {
 			argsToUse = explicitArgs;
 		}
@@ -444,6 +457,7 @@ class ConstructorResolver {
 				}
 			}
 			if (argsToResolve != null) {
+				// 解析构造器参数
 				argsToUse = resolvePreparedArguments(beanName, mbd, bw, factoryMethodToUse, argsToResolve, true);
 			}
 		}
@@ -466,6 +480,7 @@ class ConstructorResolver {
 				candidates = new ArrayList<>();
 				Method[] rawCandidates = getCandidateMethods(factoryClass, mbd);
 				for (Method candidate : rawCandidates) {
+					// 判断候选方法是否工厂方法
 					if (Modifier.isStatic(candidate.getModifiers()) == isStatic && mbd.isFactoryMethod(candidate)) {
 						candidates.add(candidate);
 					}
@@ -633,10 +648,21 @@ class ConstructorResolver {
 			}
 		}
 
+		// 实例化 bean，并设值到 bean 包装器中
 		bw.setBeanInstance(instantiate(beanName, mbd, factoryBean, factoryMethodToUse, argsToUse));
 		return bw;
 	}
 
+	/**
+	 * 实例化 bean
+	 *
+	 * @param beanName
+	 * @param mbd
+	 * @param factoryBean
+	 * @param factoryMethod
+	 * @param args
+	 * @return
+	 */
 	private Object instantiate(String beanName, RootBeanDefinition mbd,
 			@Nullable Object factoryBean, Method factoryMethod, Object[] args) {
 
@@ -648,6 +674,7 @@ class ConstructorResolver {
 						this.beanFactory.getAccessControlContext());
 			}
 			else {
+				// bean 工厂实例化策略实例化 bean
 				return this.beanFactory.getInstantiationStrategy().instantiate(
 						mbd, beanName, this.beanFactory, factoryBean, factoryMethod, args);
 			}
@@ -813,13 +840,17 @@ class ConstructorResolver {
 	}
 
 	/**
+	 * 解析构造器参数
+	 *
 	 * Resolve the prepared arguments stored in the given bean definition.
 	 */
 	private Object[] resolvePreparedArguments(String beanName, RootBeanDefinition mbd, BeanWrapper bw,
 			Executable executable, Object[] argsToResolve, boolean fallback) {
 
+		// 类型转换器
 		TypeConverter customConverter = this.beanFactory.getCustomTypeConverter();
 		TypeConverter converter = (customConverter != null ? customConverter : bw);
+		// bean 定义值转换器
 		BeanDefinitionValueResolver valueResolver =
 				new BeanDefinitionValueResolver(this.beanFactory, beanName, mbd, converter);
 		Class<?>[] paramTypes = executable.getParameterTypes();
@@ -827,11 +858,14 @@ class ConstructorResolver {
 		Object[] resolvedArgs = new Object[argsToResolve.length];
 		for (int argIndex = 0; argIndex < argsToResolve.length; argIndex++) {
 			Object argValue = argsToResolve[argIndex];
+			// 方法参数
 			MethodParameter methodParam = MethodParameter.forExecutable(executable, argIndex);
 			if (argValue == autowiredArgumentMarker) {
+				// 解析自动注入参数
 				argValue = resolveAutowiredArgument(methodParam, beanName, null, converter, fallback);
 			}
 			else if (argValue instanceof BeanMetadataElement) {
+				// bean 元数据元素，使用值解析器进行解析
 				argValue = valueResolver.resolveValueIfNecessary("constructor argument", argValue);
 			}
 			else if (argValue instanceof String) {
@@ -839,6 +873,7 @@ class ConstructorResolver {
 			}
 			Class<?> paramType = paramTypes[argIndex];
 			try {
+				// 利用转换器转换，把值赋值到解析的数组结果中
 				resolvedArgs[argIndex] = converter.convertIfNecessary(argValue, paramType, methodParam);
 			}
 			catch (TypeMismatchException ex) {
@@ -867,6 +902,7 @@ class ConstructorResolver {
 	}
 
 	/**
+	 * 模板方法解析支持可以被自动注入的特定参数
 	 * Template method for resolving the specified argument which is supposed to be autowired.
 	 */
 	@Nullable
@@ -882,6 +918,7 @@ class ConstructorResolver {
 			return injectionPoint;
 		}
 		try {
+			// 解析依赖
 			return this.beanFactory.resolveDependency(
 					new DependencyDescriptor(param, true), beanName, autowiredBeanNames, typeConverter);
 		}

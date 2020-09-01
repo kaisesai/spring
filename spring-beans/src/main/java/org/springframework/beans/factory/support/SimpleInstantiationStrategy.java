@@ -56,7 +56,16 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 		return currentlyInvokedFactoryMethod.get();
 	}
 
-
+	/**
+	 * 使用默认的无参构造器实例化 bean
+	 *
+	 * @param bd       the bean definition
+	 * @param beanName the name of the bean when it is created in this context.
+	 *                 The name can be {@code null} if we are autowiring a bean which doesn't
+	 *                 belong to the factory.
+	 * @param owner    the owning BeanFactory
+	 * @return
+	 */
 	@Override
 	public Object instantiate(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner) {
 		// Don't override the class with CGLIB if no overrides.
@@ -84,6 +93,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 					}
 				}
 			}
+			// 使用无参构造器实例化 bean
 			return BeanUtils.instantiateClass(constructorToUse);
 		}
 		else {
@@ -102,6 +112,17 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 		throw new UnsupportedOperationException("Method Injection not supported in SimpleInstantiationStrategy");
 	}
 
+	/**
+	 * 通过构造器实例化 bean
+	 * @param bd       the bean definition
+	 * @param beanName the name of the bean when it is created in this context.
+	 *                 The name can be {@code null} if we are autowiring a bean which doesn't
+	 *                 belong to the factory.
+	 * @param owner    the owning BeanFactory
+	 * @param ctor     the constructor to use
+	 * @param args     the constructor arguments to apply
+	 * @return
+	 */
 	@Override
 	public Object instantiate(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner,
 			final Constructor<?> ctor, Object... args) {
@@ -114,6 +135,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 					return null;
 				});
 			}
+			// bean 工具类实例化 bean，构造器实例化
 			return BeanUtils.instantiateClass(ctor, args);
 		}
 		else {
@@ -133,6 +155,20 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 		throw new UnsupportedOperationException("Method Injection not supported in SimpleInstantiationStrategy");
 	}
 
+	/**
+	 * 实例化 bean
+	 *
+	 * @param bd            the bean definition
+	 * @param beanName      the name of the bean when it is created in this context.
+	 *                      The name can be {@code null} if we are autowiring a bean which doesn't
+	 *                      belong to the factory.
+	 * @param owner         the owning BeanFactory
+	 * @param factoryBean   the factory bean instance to call the factory method on,
+	 *                      or {@code null} in case of a static factory method
+	 * @param factoryMethod the factory method to use
+	 * @param args          the factory method arguments to apply
+	 * @return
+	 */
 	@Override
 	public Object instantiate(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner,
 			@Nullable Object factoryBean, final Method factoryMethod, Object... args) {
@@ -148,9 +184,11 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 				ReflectionUtils.makeAccessible(factoryMethod);
 			}
 
+			// 事前执行的工厂方法，
 			Method priorInvokedFactoryMethod = currentlyInvokedFactoryMethod.get();
 			try {
 				currentlyInvokedFactoryMethod.set(factoryMethod);
+				// 利用的反射，通过方法 Method 调用工厂bean，传入参数，最后来返回实例化对象
 				Object result = factoryMethod.invoke(factoryBean, args);
 				if (result == null) {
 					result = new NullBean();

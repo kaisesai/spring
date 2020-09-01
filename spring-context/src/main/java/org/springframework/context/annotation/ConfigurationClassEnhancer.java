@@ -56,6 +56,8 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
+ * 通过生成一个 CGLIB 子类来增强 Configuration 类，这个类于 spring 容器相互作用。
+ *
  * Enhances {@link Configuration} classes by generating a CGLIB subclass which
  * interacts with the Spring container to respect bean scoping semantics for
  * {@code @Bean} methods. Each such {@code @Bean} method will be overridden in
@@ -106,6 +108,7 @@ class ConfigurationClassEnhancer {
 			}
 			return configClass;
 		}
+		// 根据 CGLIB 的 Enhancer 创建一个 Class
 		Class<?> enhancedClass = createClass(newEnhancer(configClass, classLoader));
 		if (logger.isTraceEnabled()) {
 			logger.trace(String.format("Successfully enhanced %s; enhanced class name is: %s",

@@ -54,6 +54,7 @@ class ObjenesisCglibAopProxy extends CglibAopProxy {
 
 	@Override
 	protected Object createProxyClassAndInstance(Enhancer enhancer, Callback[] callbacks) {
+		// 创建代理类的实例对象
 		Class<?> proxyClass = enhancer.createClass();
 		Object proxyInstance = null;
 

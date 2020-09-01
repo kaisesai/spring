@@ -120,6 +120,7 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
 
 	@Override
 	public void onRefresh() {
+		// 启动生命周期类型
 		startBeans(true);
 		this.running = true;
 	}
@@ -138,12 +139,19 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
 
 	// Internal helpers
 
+	/**
+	 * 启动生命周期 bean 类
+	 *
+	 * @param autoStartupOnly 是否仅仅是自动启动
+	 */
 	private void startBeans(boolean autoStartupOnly) {
+		// 获取所有的生命周期 bean
 		Map<String, Lifecycle> lifecycleBeans = getLifecycleBeans();
 		Map<Integer, LifecycleGroup> phases = new TreeMap<>();
 
 		lifecycleBeans.forEach((beanName, bean) -> {
 			if (!autoStartupOnly || (bean instanceof SmartLifecycle && ((SmartLifecycle) bean).isAutoStartup())) {
+				// 获取相位值
 				int phase = getPhase(bean);
 				phases.computeIfAbsent(
 						phase,
@@ -152,6 +160,7 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
 			}
 		});
 		if (!phases.isEmpty()) {
+			// 启动生命周期类
 			phases.values().forEach(LifecycleGroup::start);
 		}
 	}
@@ -267,21 +276,28 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
 	// overridable hooks
 
 	/**
+	 * 取回全部的适用的生命周期 bean：已经被创建的全部的单例，以及所有的 SmartLifecycle bean 类（即使它们被标记为懒加载）
+	 *
 	 * Retrieve all applicable Lifecycle beans: all singletons that have already been created,
 	 * as well as all SmartLifecycle beans (even if they are marked as lazy-init).
 	 * @return the Map of applicable beans, with bean names as keys and bean instances as values
 	 */
 	protected Map<String, Lifecycle> getLifecycleBeans() {
+		// 获取工厂 bean
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
 		Map<String, Lifecycle> beans = new LinkedHashMap<>();
+		// 获取 Lifecycle 接口的 bean 的名称
 		String[] beanNames = beanFactory.getBeanNamesForType(Lifecycle.class, false, false);
 		for (String beanName : beanNames) {
+			// 转换 bean 名称
 			String beanNameToRegister = BeanFactoryUtils.transformedBeanName(beanName);
+			// 判断是否为工厂 bean
 			boolean isFactoryBean = beanFactory.isFactoryBean(beanNameToRegister);
 			String beanNameToCheck = (isFactoryBean ? BeanFactory.FACTORY_BEAN_PREFIX + beanName : beanName);
 			if ((beanFactory.containsSingleton(beanNameToRegister) &&
 					(!isFactoryBean || matchesBeanType(Lifecycle.class, beanNameToCheck, beanFactory))) ||
 					matchesBeanType(SmartLifecycle.class, beanNameToCheck, beanFactory)) {
+				// 从 bean 工厂中找生命周期的 bean
 				Object bean = beanFactory.getBean(beanNameToCheck);
 				if (bean != this && bean instanceof Lifecycle) {
 					beans.put(beanNameToRegister, (Lifecycle) bean);

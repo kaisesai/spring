@@ -173,6 +173,8 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 
 
 	/**
+	 * 注册 bean 定义
+	 *
 	 * Register a {@link org.springframework.beans.factory.config.BeanDefinition} for
 	 * any classes specified by {@link #register(Class...)} and scan any packages
 	 * specified by {@link #scan(String...)}.
@@ -196,22 +198,28 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 	 */
 	@Override
 	protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) {
+		// 注解的 bean 定义读取器
 		AnnotatedBeanDefinitionReader reader = getAnnotatedBeanDefinitionReader(beanFactory);
+		// 类路径下的 bean 定义扫描器
 		ClassPathBeanDefinitionScanner scanner = getClassPathBeanDefinitionScanner(beanFactory);
 
+		// bean 名称生成器
 		BeanNameGenerator beanNameGenerator = getBeanNameGenerator();
 		if (beanNameGenerator != null) {
 			reader.setBeanNameGenerator(beanNameGenerator);
 			scanner.setBeanNameGenerator(beanNameGenerator);
+			// 注册单例对象
 			beanFactory.registerSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR, beanNameGenerator);
 		}
 
+		// 范围元数据解析器
 		ScopeMetadataResolver scopeMetadataResolver = getScopeMetadataResolver();
 		if (scopeMetadataResolver != null) {
 			reader.setScopeMetadataResolver(scopeMetadataResolver);
 			scanner.setScopeMetadataResolver(scopeMetadataResolver);
 		}
 
+		// 注册组件类
 		if (!this.componentClasses.isEmpty()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Registering component classes: [" +
@@ -220,6 +228,7 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 			reader.register(ClassUtils.toClassArray(this.componentClasses));
 		}
 
+		// 包扫描类
 		if (!this.basePackages.isEmpty()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Scanning base packages: [" +
@@ -228,6 +237,7 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 			scanner.scan(StringUtils.toStringArray(this.basePackages));
 		}
 
+		// 从配置类路径下加载 bean 定义
 		String[] configLocations = getConfigLocations();
 		if (configLocations != null) {
 			for (String configLocation : configLocations) {

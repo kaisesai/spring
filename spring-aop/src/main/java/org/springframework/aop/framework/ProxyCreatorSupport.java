@@ -22,6 +22,7 @@ import java.util.List;
 import org.springframework.util.Assert;
 
 /**
+ *
  * Base class for proxy factories.
  * Provides convenient access to a configurable AopProxyFactory.
  *
@@ -95,6 +96,8 @@ public class ProxyCreatorSupport extends AdvisedSupport {
 
 
 	/**
+	 * 子类应该调用这个来返回一个新的 AOP 代理，不应该用 this 作为参数来创建一个 AOP 代理对象
+	 *
 	 * Subclasses should call this to get a new AOP proxy. They should <b>not</b>
 	 * create an AOP proxy with {@code this} as an argument.
 	 */
@@ -102,6 +105,7 @@ public class ProxyCreatorSupport extends AdvisedSupport {
 		if (!this.active) {
 			activate();
 		}
+		// 通过代理工厂创建代理类
 		return getAopProxyFactory().createAopProxy(this);
 	}
 

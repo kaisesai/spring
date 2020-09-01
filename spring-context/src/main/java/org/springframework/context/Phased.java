@@ -27,6 +27,8 @@ package org.springframework.context;
 public interface Phased {
 
 	/**
+	 * 返回该对象的阶段（相位）值
+	 *
 	 * Return the phase value of this object.
 	 */
 	int getPhase();

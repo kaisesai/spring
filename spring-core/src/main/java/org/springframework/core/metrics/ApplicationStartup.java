@@ -17,6 +17,9 @@
 package org.springframework.core.metrics;
 
 /**
+ * 使用  StartupStep steps 检查程序启动阶段。
+ * 核心容器和基础设施可以使用 ApplicationStartup 在程序启动期间来标记步骤，并且收集有关执行上下文和其处理时间的数据
+ *
  * Instruments the application startup phase using {@link StartupStep steps}.
  * <p>The core container and its infrastructure components can use the {@code ApplicationStartup}
  * to mark steps during the application startup and collect data about the execution context

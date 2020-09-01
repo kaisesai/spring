@@ -72,6 +72,8 @@ public abstract class BeanFactoryUtils {
 	}
 
 	/**
+	 * 返回实际 bean 的名称，去除工厂的前缀引用
+	 *
 	 * Return the actual bean name, stripping out the factory dereference
 	 * prefix (if any, also stripping repeated factory prefixes if found).
 	 * @param name the name of the bean
@@ -80,6 +82,7 @@ public abstract class BeanFactoryUtils {
 	 */
 	public static String transformedBeanName(String name) {
 		Assert.notNull(name, "'name' must not be null");
+		// 名字是否以 & 开头的，工厂 bean 的前缀
 		if (!name.startsWith(BeanFactory.FACTORY_BEAN_PREFIX)) {
 			return name;
 		}

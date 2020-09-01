@@ -148,11 +148,19 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 		multicastEvent(event, resolveDefaultEventType(event));
 	}
 
+	/**
+	 * 多播器发布事件
+	 *
+	 * @param event     the event to multicast
+	 * @param eventType the type of event (can be {@code null})
+	 */
 	@Override
 	public void multicastEvent(final ApplicationEvent event, @Nullable ResolvableType eventType) {
 		ResolvableType type = (eventType != null ? eventType : resolveDefaultEventType(event));
+		// 默认是单线程，可以创建自定义的多播器，实现多线程多播
 		Executor executor = getTaskExecutor();
 		for (ApplicationListener<?> listener : getApplicationListeners(event, type)) {
+			// 执行监听器发布事件
 			if (executor != null) {
 				executor.execute(() -> invokeListener(listener, event));
 			}
@@ -177,12 +185,15 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 	}
 
 	/**
+	 * 发布事件
+	 *
 	 * Invoke the given listener with the given event.
 	 * @param listener the ApplicationListener to invoke
 	 * @param event the current event to propagate
 	 * @since 4.1
 	 */
 	protected void invokeListener(ApplicationListener<?> listener, ApplicationEvent event) {
+		// 错误处理器
 		ErrorHandler errorHandler = getErrorHandler();
 		if (errorHandler != null) {
 			try {

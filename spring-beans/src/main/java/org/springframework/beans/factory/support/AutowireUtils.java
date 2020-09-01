@@ -131,10 +131,12 @@ abstract class AutowireUtils {
 		if (autowiringValue instanceof ObjectFactory && !requiredType.isInstance(autowiringValue)) {
 			ObjectFactory<?> factory = (ObjectFactory<?>) autowiringValue;
 			if (autowiringValue instanceof Serializable && requiredType.isInterface()) {
+				// 动态代理对象
 				autowiringValue = Proxy.newProxyInstance(requiredType.getClassLoader(),
 						new Class<?>[] {requiredType}, new ObjectFactoryDelegatingInvocationHandler(factory));
 			}
 			else {
+				// 获取对象方法
 				return factory.getObject();
 			}
 		}

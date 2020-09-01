@@ -120,17 +120,22 @@ class ConfigurationClassBeanDefinitionReader {
 
 
 	/**
+	 * 从 ConfigurationClass 类中加载 bean 定义
+	 *
 	 * Read {@code configurationModel}, registering bean definitions
 	 * with the registry based on its contents.
 	 */
 	public void loadBeanDefinitions(Set<ConfigurationClass> configurationModel) {
 		TrackedConditionEvaluator trackedConditionEvaluator = new TrackedConditionEvaluator();
 		for (ConfigurationClass configClass : configurationModel) {
+			// 从 ConfigurationClass 类上加载 bean 定义
 			loadBeanDefinitionsForConfigurationClass(configClass, trackedConditionEvaluator);
 		}
 	}
 
 	/**
+	 * 读取一个特定的 ConfigurationClass 类，为这个类自己和它所有的 @Bean 注解的方法
+	 *
 	 * Read a particular {@link ConfigurationClass}, registering bean definitions
 	 * for the class itself and all of its {@link Bean} methods.
 	 */
@@ -147,17 +152,24 @@ class ConfigurationClassBeanDefinitionReader {
 		}
 
 		if (configClass.isImported()) {
+			// 为了导入的配置类，注册 bean 定义
 			registerBeanDefinitionForImportedConfigurationClass(configClass);
 		}
+		// 处理配置类上的所有的 bean 方法
 		for (BeanMethod beanMethod : configClass.getBeanMethods()) {
+			// bean 方法上的加载 bean 定义
 			loadBeanDefinitionsForBeanMethod(beanMethod);
 		}
 
+		// 从 ImportedResources 上加载 bean 定义
 		loadBeanDefinitionsFromImportedResources(configClass.getImportedResources());
+		// 从 ImportBeanDefinitionRegistrars 上加载 bean 定义
 		loadBeanDefinitionsFromRegistrars(configClass.getImportBeanDefinitionRegistrars());
 	}
 
 	/**
+	 * 注册 Configuration 类它自己
+	 *
 	 * Register the {@link Configuration} class itself as a bean definition.
 	 */
 	private void registerBeanDefinitionForImportedConfigurationClass(ConfigurationClass configClass) {
@@ -167,10 +179,12 @@ class ConfigurationClassBeanDefinitionReader {
 		ScopeMetadata scopeMetadata = scopeMetadataResolver.resolveScopeMetadata(configBeanDef);
 		configBeanDef.setScope(scopeMetadata.getScopeName());
 		String configBeanName = this.importBeanNameGenerator.generateBeanName(configBeanDef, this.registry);
+		// 处理通用的定义注解信息
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(configBeanDef, metadata);
 
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(configBeanDef, configBeanName);
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
+		// 注册 bean 定义到 bean 工厂里去
 		this.registry.registerBeanDefinition(definitionHolder.getBeanName(), definitionHolder.getBeanDefinition());
 		configClass.setBeanName(configBeanName);
 
@@ -180,6 +194,8 @@ class ConfigurationClassBeanDefinitionReader {
 	}
 
 	/**
+	 * 通过给定的 BeanMethod，通过 bean 定义注册器 注册 bean
+	 *
 	 * Read the given {@link BeanMethod}, registering bean definitions
 	 * with the BeanDefinitionRegistry based on its contents.
 	 */
@@ -198,9 +214,11 @@ class ConfigurationClassBeanDefinitionReader {
 			return;
 		}
 
+		// 从元数据中解析 Bean 注解信息
 		AnnotationAttributes bean = AnnotationConfigUtils.attributesFor(metadata, Bean.class);
 		Assert.state(bean != null, "No @Bean annotation attributes");
 
+		// 注册 bean 的别名
 		// Consider name and any aliases
 		List<String> names = new ArrayList<>(Arrays.asList(bean.getStringArray("name")));
 		String beanName = (!names.isEmpty() ? names.remove(0) : methodName);
@@ -220,10 +238,13 @@ class ConfigurationClassBeanDefinitionReader {
 			return;
 		}
 
+		// 创建一个配置类 bean 定义
 		ConfigurationClassBeanDefinition beanDef = new ConfigurationClassBeanDefinition(configClass, metadata, beanName);
 		beanDef.setSource(this.sourceExtractor.extractSource(metadata, configClass.getResource()));
 
+		// 设置各种属性
 		if (metadata.isStatic()) {
+			// 静态方法
 			// static @Bean method
 			if (configClass.getMetadata() instanceof StandardAnnotationMetadata) {
 				beanDef.setBeanClass(((StandardAnnotationMetadata) configClass.getMetadata()).getIntrospectedClass());
@@ -278,6 +299,7 @@ class ConfigurationClassBeanDefinitionReader {
 			}
 		}
 
+		// 如果需要，创建代理 bean 定义
 		// Replace the original bean definition with the target one, if necessary
 		BeanDefinition beanDefToRegister = beanDef;
 		if (proxyMode != ScopedProxyMode.NO) {
@@ -292,6 +314,7 @@ class ConfigurationClassBeanDefinitionReader {
 			logger.trace(String.format("Registering bean definition for @Bean method %s.%s()",
 					configClass.getMetadata().getClassName(), beanName));
 		}
+		// 把 bean 定义注册到 bean 工厂中的缓存中
 		this.registry.registerBeanDefinition(beanName, beanDefToRegister);
 	}
 
@@ -386,6 +409,7 @@ class ConfigurationClassBeanDefinitionReader {
 				}
 			}
 
+			// 从资源上加载 bean 定义
 			// TODO SPR-6310: qualify relative path locations as done in AbstractContextLoader.modifyLocations
 			reader.loadBeanDefinitions(resource);
 		});

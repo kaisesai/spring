@@ -54,7 +54,14 @@ public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
 	 */
 	private static final boolean IN_NATIVE_IMAGE = (System.getProperty("org.graalvm.nativeimage.imagecode") != null);
 
-
+	/**
+	 * 创建代理对象
+	 *
+	 * @param config the AOP configuration in the form of an
+	 *               AdvisedSupport object
+	 * @return
+	 * @throws AopConfigException
+	 */
 	@Override
 	public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
 		if (!IN_NATIVE_IMAGE &&
@@ -65,8 +72,10 @@ public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
 						"Either an interface or a target is required for proxy creation.");
 			}
 			if (targetClass.isInterface() || Proxy.isProxyClass(targetClass)) {
+				// 代理对象是一个接口，或者它是一个 jdk 自带的 Proxy 类，那就创建 jdk 的动态代理对象
 				return new JdkDynamicAopProxy(config);
 			}
+			// 否则就创建一个 cglib 代理对象
 			return new ObjenesisCglibAopProxy(config);
 		}
 		else {
