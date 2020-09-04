@@ -28,6 +28,8 @@ import org.springframework.aop.ProxyMethodInvocation;
 import org.springframework.lang.Nullable;
 
 /**
+ * 环绕通知，它也实现了方法拦截器
+ *
  * Spring AOP around advice (MethodInterceptor) that wraps
  * an AspectJ advice method. Exposes ProceedingJoinPoint.
  *

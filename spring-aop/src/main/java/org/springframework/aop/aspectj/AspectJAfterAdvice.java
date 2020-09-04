@@ -26,6 +26,8 @@ import org.springframework.aop.AfterAdvice;
 import org.springframework.lang.Nullable;
 
 /**
+ * 后置通知，实现了方法拦截器
+ *
  * Spring AOP advice wrapping an AspectJ after advice method.
  *
  * @author Rod Johnson
@@ -46,9 +48,11 @@ public class AspectJAfterAdvice extends AbstractAspectJAdvice
 	@Nullable
 	public Object invoke(MethodInvocation mi) throws Throwable {
 		try {
+			// 执行 ReflectiveMethodInvocation 的 proceed 方法
 			return mi.proceed();
 		}
 		finally {
+			// 最后无论如何都会调用后置处理拦截器方法
 			invokeAdviceMethod(getJoinPointMatch(), null, null);
 		}
 	}

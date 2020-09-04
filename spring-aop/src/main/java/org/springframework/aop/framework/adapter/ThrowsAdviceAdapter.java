@@ -25,6 +25,8 @@ import org.springframework.aop.Advisor;
 import org.springframework.aop.ThrowsAdvice;
 
 /**
+ * 异常通知适配器
+ *
  * Adapter to enable {@link org.springframework.aop.MethodBeforeAdvice}
  * to be used in the Spring AOP framework.
  *
@@ -41,6 +43,7 @@ class ThrowsAdviceAdapter implements AdvisorAdapter, Serializable {
 
 	@Override
 	public MethodInterceptor getInterceptor(Advisor advisor) {
+		// 创建一个异常通知拦截器
 		return new ThrowsAdviceInterceptor(advisor.getAdvice());
 	}
 

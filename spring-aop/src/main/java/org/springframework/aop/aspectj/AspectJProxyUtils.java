@@ -55,6 +55,7 @@ public abstract class AspectJProxyUtils {
 				}
 			}
 			if (foundAspectJAdvice && !advisors.contains(ExposeInvocationInterceptor.ADVISOR)) {
+				// 添加一个暴露执行的拦截器
 				advisors.add(0, ExposeInvocationInterceptor.ADVISOR);
 				return true;
 			}

@@ -543,7 +543,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		try {
-			// 给一个 bean 后置处理器们一个机会，让它返回一个代理对象而不是目标 bean 实例，
+			// 给一个 bean 后置处理器们一个机会，让它返回一个代理对象而不是目标 bean 实例。
+			// 一般是用于 spring aop 代理对象
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
@@ -722,6 +723,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	}
 
 	/**
+	 * 根据给定的 bean 定义确定目标类型
+	 *
 	 * Determine the target type for the given bean definition.
 	 * @param beanName the name of the bean (for error handling purposes)
 	 * @param mbd the merged bean definition for the bean

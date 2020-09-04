@@ -31,6 +31,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * 这是一个为了使用自动代理，从一个 bean 工厂中恢复标准 spring 增强器的帮助类
+ *
  * Helper for retrieving standard Spring Advisors from a BeanFactory,
  * for use with auto-proxying.
  *
@@ -59,12 +61,15 @@ public class BeanFactoryAdvisorRetrievalHelper {
 
 
 	/**
+	 * 从挡墙 bean 工厂中查找合格的增强器 beans，忽略工厂 bean 和当前正被创建的 bean
+	 *
 	 * Find all eligible Advisor beans in the current bean factory,
 	 * ignoring FactoryBeans and excluding beans that are currently in creation.
 	 * @return the list of {@link org.springframework.aop.Advisor} beans
 	 * @see #isEligibleBean
 	 */
 	public List<Advisor> findAdvisorBeans() {
+		// 找增强器的 bean 名称
 		// Determine list of advisor bean names, if not cached already.
 		String[] advisorNames = this.cachedAdvisorBeanNames;
 		if (advisorNames == null) {
@@ -80,7 +85,9 @@ public class BeanFactoryAdvisorRetrievalHelper {
 
 		List<Advisor> advisors = new ArrayList<>();
 		for (String name : advisorNames) {
+			// 是否一个合格的 bean
 			if (isEligibleBean(name)) {
+				// 顾虑当前被创建的 bean
 				if (this.beanFactory.isCurrentlyInCreation(name)) {
 					if (logger.isTraceEnabled()) {
 						logger.trace("Skipping currently created advisor '" + name + "'");
@@ -88,6 +95,7 @@ public class BeanFactoryAdvisorRetrievalHelper {
 				}
 				else {
 					try {
+						// 从 bean 工厂中查找 Advisor 类型的 bean
 						advisors.add(this.beanFactory.getBean(name, Advisor.class));
 					}
 					catch (BeanCreationException ex) {

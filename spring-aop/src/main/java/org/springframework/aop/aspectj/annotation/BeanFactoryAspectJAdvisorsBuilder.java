@@ -74,6 +74,9 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 
 
 	/**
+	 * 从当前 bean 工厂中查找 AspectJ 注解的切面，返回一个 spring aop 增强器的列表。
+	 * 为每个切面的 advice 方法创建一个 spring 增强器
+	 *
 	 * Look for AspectJ-annotated aspect beans in the current bean factory,
 	 * and return to a list of Spring AOP Advisors representing them.
 	 * <p>Creates a Spring Advisor for each AspectJ advice method.
@@ -89,26 +92,34 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 				if (aspectNames == null) {
 					List<Advisor> advisors = new ArrayList<>();
 					aspectNames = new ArrayList<>();
+					// 从 bean 工厂中找出全部的 bean 名称
 					String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 							this.beanFactory, Object.class, true, false);
 					for (String beanName : beanNames) {
 						if (!isEligibleBean(beanName)) {
 							continue;
 						}
+						// 我们需要小心不要让这些 bean 过早的实例化，这种情况下它们将会被 spring 容器缓存，但不会被编织。
 						// We must be careful not to instantiate beans eagerly as in this case they
 						// would be cached by the Spring container but would not have been weaved.
+						// 根据 bean 名称获取类型
 						Class<?> beanType = this.beanFactory.getType(beanName, false);
 						if (beanType == null) {
 							continue;
 						}
+						// 判断是否有 @Aspect 注解
 						if (this.advisorFactory.isAspect(beanType)) {
 							aspectNames.add(beanName);
+							// 切面元数据
 							AspectMetadata amd = new AspectMetadata(beanType, beanName);
 							if (amd.getAjType().getPerClause().getKind() == PerClauseKind.SINGLETON) {
+								// 必须是单例的才能创建切面
 								MetadataAwareAspectInstanceFactory factory =
 										new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
+								// 获取全部的增强器，重要的方法
 								List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
 								if (this.beanFactory.isSingleton(beanName)) {
+									// 放入缓存中
 									this.advisorsCache.put(beanName, classAdvisors);
 								}
 								else {
@@ -125,6 +136,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 								MetadataAwareAspectInstanceFactory factory =
 										new PrototypeAspectInstanceFactory(this.beanFactory, beanName);
 								this.aspectFactoryCache.put(beanName, factory);
+								// 获取原型对象的增强器
 								advisors.addAll(this.advisorFactory.getAdvisors(factory));
 							}
 						}
@@ -153,6 +165,8 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 	}
 
 	/**
+	 * 判断一个 bean 是否切面的 bean
+	 *
 	 * Return whether the aspect bean with the given name is eligible.
 	 * @param beanName the name of the aspect bean
 	 * @return whether the bean is eligible

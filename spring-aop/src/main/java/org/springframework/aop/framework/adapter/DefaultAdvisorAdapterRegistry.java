@@ -40,19 +40,31 @@ import org.springframework.aop.support.DefaultPointcutAdvisor;
 @SuppressWarnings("serial")
 public class DefaultAdvisorAdapterRegistry implements AdvisorAdapterRegistry, Serializable {
 
+	// 增强器适配器
 	private final List<AdvisorAdapter> adapters = new ArrayList<>(3);
 
 
 	/**
+	 * 创建一个增强器适配器注册器，注册已知的适配器。
+	 *
 	 * Create a new DefaultAdvisorAdapterRegistry, registering well-known adapters.
 	 */
 	public DefaultAdvisorAdapterRegistry() {
+		// 注册前置通知适配器
 		registerAdvisorAdapter(new MethodBeforeAdviceAdapter());
+		// 注册返回通知适配器
 		registerAdvisorAdapter(new AfterReturningAdviceAdapter());
+		// 注册异常通知适配器
 		registerAdvisorAdapter(new ThrowsAdviceAdapter());
 	}
 
-
+	/**
+	 * 包装一个增强器
+	 *
+	 * @param adviceObject
+	 * @return
+	 * @throws UnknownAdviceTypeException
+	 */
 	@Override
 	public Advisor wrap(Object adviceObject) throws UnknownAdviceTypeException {
 		if (adviceObject instanceof Advisor) {
@@ -75,14 +87,24 @@ public class DefaultAdvisorAdapterRegistry implements AdvisorAdapterRegistry, Se
 		throw new UnknownAdviceTypeException(advice);
 	}
 
+	/**
+	 * 从戈丁的增强器中获取方法拦截器
+	 *
+	 * @param advisor the Advisor to find an interceptor for
+	 * @return
+	 * @throws UnknownAdviceTypeException
+	 */
 	@Override
 	public MethodInterceptor[] getInterceptors(Advisor advisor) throws UnknownAdviceTypeException {
 		List<MethodInterceptor> interceptors = new ArrayList<>(3);
+		// 获取增强器上的通知
 		Advice advice = advisor.getAdvice();
 		if (advice instanceof MethodInterceptor) {
+			// 方法拦截器接口，环绕通知、后置通知、异常通知
 			interceptors.add((MethodInterceptor) advice);
 		}
 		for (AdvisorAdapter adapter : this.adapters) {
+			// 三个适配器：前置通知、返回通知、异常通知
 			if (adapter.supportsAdvice(advice)) {
 				interceptors.add(adapter.getInterceptor(advisor));
 			}

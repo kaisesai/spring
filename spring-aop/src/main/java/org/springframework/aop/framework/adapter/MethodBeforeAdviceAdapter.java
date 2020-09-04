@@ -25,6 +25,8 @@ import org.springframework.aop.Advisor;
 import org.springframework.aop.MethodBeforeAdvice;
 
 /**
+ * 适配一个方法前置通知的类到 spring aop 框架中
+ *
  * Adapter to enable {@link org.springframework.aop.MethodBeforeAdvice}
  * to be used in the Spring AOP framework.
  *
@@ -42,6 +44,7 @@ class MethodBeforeAdviceAdapter implements AdvisorAdapter, Serializable {
 	@Override
 	public MethodInterceptor getInterceptor(Advisor advisor) {
 		MethodBeforeAdvice advice = (MethodBeforeAdvice) advisor.getAdvice();
+		// 返回一个方法前置通知拦截器
 		return new MethodBeforeAdviceInterceptor(advice);
 	}
 

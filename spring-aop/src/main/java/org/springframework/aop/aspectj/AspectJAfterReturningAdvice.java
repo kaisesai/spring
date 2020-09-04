@@ -27,6 +27,8 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.TypeUtils;
 
 /**
+ * 返回通知，没有实现方法拦截器
+ *
  * Spring AOP advice wrapping an AspectJ after-returning advice method.
  *
  * @author Rod Johnson

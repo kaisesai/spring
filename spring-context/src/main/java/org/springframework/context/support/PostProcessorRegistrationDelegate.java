@@ -78,7 +78,8 @@ final class PostProcessorRegistrationDelegate {
 			// 处理 bean 工厂后置处理器
 			for (BeanFactoryPostProcessor postProcessor : beanFactoryPostProcessors) {
 				if (postProcessor instanceof BeanDefinitionRegistryPostProcessor) {
-					// 属于 bean 定义注册器后置处理器，主要是 ConfigurationClassPostProcessor 类
+					// bean 定义注册器后置处理器，主要是 ConfigurationClassPostProcessor 类，用来处理 @Configuration 类注解的 bean
+					// 让它们变成 bean 定义，并且注册到 bean 工厂中。
 					// 它主要是在 AnnotatedBeanDefinitionReader 类创建的时候调用的。
 					BeanDefinitionRegistryPostProcessor registryProcessor =
 							(BeanDefinitionRegistryPostProcessor) postProcessor;

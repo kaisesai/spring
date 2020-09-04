@@ -58,6 +58,7 @@ public final class ExposeInvocationInterceptor implements MethodInterceptor, Pri
 		}
 	};
 
+	// 线程本地化，保存方法执行器
 	private static final ThreadLocal<MethodInvocation> invocation =
 			new NamedThreadLocal<>("Current AOP method invocation");
 
@@ -91,6 +92,7 @@ public final class ExposeInvocationInterceptor implements MethodInterceptor, Pri
 	@Override
 	@Nullable
 	public Object invoke(MethodInvocation mi) throws Throwable {
+		// 把当前方法执行器放入线程本地化
 		MethodInvocation oldInvocation = invocation.get();
 		invocation.set(mi);
 		try {

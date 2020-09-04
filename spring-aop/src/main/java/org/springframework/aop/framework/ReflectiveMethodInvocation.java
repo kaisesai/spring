@@ -31,6 +31,13 @@ import org.springframework.core.BridgeMethodResolver;
 import org.springframework.lang.Nullable;
 
 /**
+ * spring 框架的方法执行器接口，使用反射调用目标对象。子类可以重写 invokeJoinpoint 方法区改变它的行为，
+ * 它是一个对于大多数指定方法执行器实现非常有用的类。
+ * 它可以克隆一个调用，反复的去执行 proceed 方法（一次又一次），使用 invocableClone 进行克隆。
+ * 它也可以堆这个执行附加一些属性，使用 setUserAttribute 或者 getUserAttribute 方法。
+ *
+ * 这个类时
+ *
  * Spring's implementation of the AOP Alliance
  * {@link org.aopalliance.intercept.MethodInvocation} interface,
  * implementing the extended
@@ -154,15 +161,23 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 		this.arguments = arguments;
 	}
 
-
+	/**
+	 * 执行方法调用
+	 *
+	 * @return
+	 * @throws Throwable
+	 */
 	@Override
 	@Nullable
 	public Object proceed() throws Throwable {
+		// 从索引为 -1 开始调用
 		// We start with an index of -1 and increment early.
 		if (this.currentInterceptorIndex == this.interceptorsAndDynamicMethodMatchers.size() - 1) {
+			// 当前索引 == 拦截器集合中最后一个拦截器时，才会进行执行真正的方法调用
 			return invokeJoinpoint();
 		}
 
+		// 根据索引递增的顺序获取拦截器
 		Object interceptorOrInterceptionAdvice =
 				this.interceptorsAndDynamicMethodMatchers.get(++this.currentInterceptorIndex);
 		if (interceptorOrInterceptionAdvice instanceof InterceptorAndDynamicMethodMatcher) {
@@ -171,10 +186,14 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 			InterceptorAndDynamicMethodMatcher dm =
 					(InterceptorAndDynamicMethodMatcher) interceptorOrInterceptionAdvice;
 			Class<?> targetClass = (this.targetClass != null ? this.targetClass : this.method.getDeclaringClass());
+			// 再一次匹配
 			if (dm.methodMatcher.matches(this.method, targetClass, this.arguments)) {
+				// 匹配成功，进行拦截调用，把当前对象作为参数，传入拦截器方法，作为方法执行器
+				// 依次执行：异常通知拦截器 --> 前置通知拦截器 --> 后置通知拦截器 --> 返回通知拦截器 --> 代理对象的目标方法
 				return dm.interceptor.invoke(this);
 			}
 			else {
+				// 动态匹配失败，跳过这个拦截器。进入下一个链
 				// Dynamic matching failed.
 				// Skip this interceptor and invoke the next in the chain.
 				return proceed();

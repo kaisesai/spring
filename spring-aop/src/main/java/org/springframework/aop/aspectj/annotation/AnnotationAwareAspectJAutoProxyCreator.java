@@ -60,6 +60,8 @@ public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorA
 
 
 	/**
+	 * 设置规则，匹配合格的 @AspectJ bean， 默认考虑所有的  @AspectJ 注解的 bean 都是合格的。
+	 *
 	 * Set a list of regex patterns, matching eligible @AspectJ bean names.
 	 * <p>Default is to consider all @AspectJ beans as eligible.
 	 */
@@ -88,10 +90,12 @@ public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorA
 
 	@Override
 	protected List<Advisor> findCandidateAdvisors() {
+		// 从 bean 工厂中找 Advisor 类型的候选 bean
 		// Add all the Spring advisors found according to superclass rules.
 		List<Advisor> advisors = super.findCandidateAdvisors();
 		// Build Advisors for all AspectJ aspects in the bean factory.
 		if (this.aspectJAdvisorsBuilder != null) {
+			// 使用切面增强器构建器，进行构建增强器
 			advisors.addAll(this.aspectJAdvisorsBuilder.buildAspectJAdvisors());
 		}
 		return advisors;
@@ -146,6 +150,7 @@ public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorA
 
 		@Override
 		protected boolean isEligibleBean(String beanName) {
+			// 判断 bean 是否一个切面 bean
 			return AnnotationAwareAspectJAutoProxyCreator.this.isEligibleAspectBean(beanName);
 		}
 	}

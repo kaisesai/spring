@@ -110,11 +110,13 @@ public class ThrowsAdviceInterceptor implements MethodInterceptor, AfterAdvice {
 	@Nullable
 	public Object invoke(MethodInvocation mi) throws Throwable {
 		try {
+			// 执行目标
 			return mi.proceed();
 		}
 		catch (Throwable ex) {
 			Method handlerMethod = getExceptionHandler(ex);
 			if (handlerMethod != null) {
+				// 执行异常通知方法
 				invokeHandlerMethod(mi, ex, handlerMethod);
 			}
 			throw ex;

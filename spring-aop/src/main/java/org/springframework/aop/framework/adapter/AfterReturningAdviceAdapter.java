@@ -25,6 +25,8 @@ import org.springframework.aop.Advisor;
 import org.springframework.aop.AfterReturningAdvice;
 
 /**
+ * 返回通知拦截器
+ *
  * Adapter to enable {@link org.springframework.aop.AfterReturningAdvice}
  * to be used in the Spring AOP framework.
  *
@@ -42,6 +44,7 @@ class AfterReturningAdviceAdapter implements AdvisorAdapter, Serializable {
 	@Override
 	public MethodInterceptor getInterceptor(Advisor advisor) {
 		AfterReturningAdvice advice = (AfterReturningAdvice) advisor.getAdvice();
+		// 创建一个返回通知拦截器
 		return new AfterReturningAdviceInterceptor(advice);
 	}
 

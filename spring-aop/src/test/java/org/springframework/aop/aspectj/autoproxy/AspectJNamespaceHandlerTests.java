@@ -98,6 +98,7 @@ public class AspectJNamespaceHandlerTests {
 
 		BeanDefinition definition = registry.getBeanDefinition(AopConfigUtils.AUTO_PROXY_CREATOR_BEAN_NAME);
 		assertThat(definition.getBeanClassName()).as("Incorrect APC class").isEqualTo(AspectJAwareAdvisorAutoProxyCreator.class.getName());
+		System.out.println(definition);
 	}
 
 }
