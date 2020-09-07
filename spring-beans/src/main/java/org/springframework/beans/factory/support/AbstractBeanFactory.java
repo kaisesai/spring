@@ -1174,9 +1174,12 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 */
 	@Override
 	public boolean isFactoryBean(String name) throws NoSuchBeanDefinitionException {
+		// 解析别名
 		String beanName = transformedBeanName(name);
+		// 获取单例
 		Object beanInstance = getSingleton(beanName, false);
 		if (beanInstance != null) {
+			// 判断是是 FactoryBean 类型
 			return (beanInstance instanceof FactoryBean);
 		}
 		// No singleton instance found -> check bean definition.

@@ -161,7 +161,7 @@ public abstract class AnnotationConfigUtils {
 		Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
 
 		// 注册各种系统类的后置处理器
-		// 注册配置类后置处理器，它属于 bean 定义后置处理器
+		// 注册配置类后置处理器，它属于 bean 定义后置处理器，它是一个 bean 定义注册器后置处理器，用于扫描 @Configuration 注解的类，解析 bean 定义的功能
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
 			def.setSource(source);

@@ -372,7 +372,7 @@ class ConfigurationClassParser {
 	}
 
 	/**
-	 * 注册成员（内嵌）类，，这些类碰巧是它们自己的
+	 * 注册成员（内嵌）类，这些类碰巧是它们自己的
 	 * Register member (nested) classes that happen to be configuration classes themselves.
 	 */
 	private void processMemberClasses(ConfigurationClass configClass, SourceClass sourceClass,

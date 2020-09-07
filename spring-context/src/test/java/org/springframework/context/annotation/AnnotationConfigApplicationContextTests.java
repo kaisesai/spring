@@ -87,6 +87,7 @@ class AnnotationConfigApplicationContextTests {
 	void getBeanByType() {
 		ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
 		TestBean testBean = context.getBean(TestBean.class);
+		System.out.println(testBean);
 		assertThat(testBean).isNotNull();
 		assertThat(testBean.name).isEqualTo("foo");
 	}

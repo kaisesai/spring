@@ -88,7 +88,7 @@ public class AnnotatedBeanDefinitionReader {
 		Assert.notNull(environment, "Environment must not be null");
 		this.registry = registry;
 		this.conditionEvaluator = new ConditionEvaluator(registry, environment, null);
-		// 注册注解配置处理器，
+		// 注册注解配置处理器，开始注册默认的一些 spring 的 bean
 		AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
 	}
 
@@ -300,6 +300,7 @@ public class AnnotatedBeanDefinitionReader {
 			}
 		}
 
+		// 创建一个 bean 定义持有器
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
 		// 代理模式 bean 定义处理器
 		definitionHolder = AnnotationConfigUtils
