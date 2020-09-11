@@ -61,7 +61,7 @@ public class BeanFactoryAdvisorRetrievalHelper {
 
 
 	/**
-	 * 从挡墙 bean 工厂中查找合格的增强器 beans，忽略工厂 bean 和当前正被创建的 bean
+	 * 从当前 bean 工厂中查找合格的增强器 beans，忽略工厂 bean 和当前正被创建的 bean
 	 *
 	 * Find all eligible Advisor beans in the current bean factory,
 	 * ignoring FactoryBeans and excluding beans that are currently in creation.
@@ -87,7 +87,7 @@ public class BeanFactoryAdvisorRetrievalHelper {
 		for (String name : advisorNames) {
 			// 是否一个合格的 bean
 			if (isEligibleBean(name)) {
-				// 顾虑当前被创建的 bean
+				// 过滤当前被创建的 bean
 				if (this.beanFactory.isCurrentlyInCreation(name)) {
 					if (logger.isTraceEnabled()) {
 						logger.trace("Skipping currently created advisor '" + name + "'");

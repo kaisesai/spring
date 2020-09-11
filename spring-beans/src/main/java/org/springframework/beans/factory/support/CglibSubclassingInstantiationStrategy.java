@@ -138,6 +138,8 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 		}
 
 		/**
+		 * 使用 CGLIB，根据提供的 bean 定义信息，来创建一个增强的子类。
+		 *
 		 * Create an enhanced subclass of the bean class for the provided bean
 		 * definition, using CGLIB.
 		 */

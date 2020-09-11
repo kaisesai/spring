@@ -417,6 +417,8 @@ class ConfigurationClassBeanDefinitionReader {
 
 	private void loadBeanDefinitionsFromRegistrars(Map<ImportBeanDefinitionRegistrar, AnnotationMetadata> registrars) {
 		registrars.forEach((registrar, metadata) ->
+				// 这里主要应用到了 spring aop 的 org.springframework.context.annotation.AspectJAutoProxyRegistrar.registerBeanDefinitions 方法
+				// 实现注册 aop 相关的类
 				registrar.registerBeanDefinitions(metadata, this.registry, this.importBeanNameGenerator));
 	}
 

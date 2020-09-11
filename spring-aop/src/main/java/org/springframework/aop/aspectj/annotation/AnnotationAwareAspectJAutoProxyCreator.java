@@ -28,6 +28,10 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * 它是 AspectJAwareAdvisorAutoProxyCreator 的一个子类，用于在当前应用程序上下文中处理所有的 aspect 注解，以及 spring 增强器。
+ * 任何一个 AspectJ 注解将会自动的被承认，并且它们通知将会被应用，如果 spring aop 的代理模式能够应用它。
+ * 这涵盖了方法执行加入点。
+ *
  * {@link AspectJAwareAdvisorAutoProxyCreator} subclass that processes all AspectJ
  * annotation aspects in the current application context, as well as Spring Advisors.
  *
@@ -90,6 +94,7 @@ public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorA
 
 	@Override
 	protected List<Advisor> findCandidateAdvisors() {
+		// spring tx 事务模块实现了 Advisor 接口
 		// 从 bean 工厂中找 Advisor 类型的候选 bean
 		// Add all the Spring advisors found according to superclass rules.
 		List<Advisor> advisors = super.findCandidateAdvisors();

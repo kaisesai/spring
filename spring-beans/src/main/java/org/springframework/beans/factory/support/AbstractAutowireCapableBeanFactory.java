@@ -464,6 +464,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		Object result = existingBean;
 		// 调用后置处理器的初始化之后的后置处理方法
 		for (BeanPostProcessor processor : getBeanPostProcessors()) {
+			// 这里主要是执行 org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator 类的 postProcessAfterInitialization() 方法，对 bean 创建代理对象
 			Object current = processor.postProcessAfterInitialization(result, beanName);
 			if (current == null) {
 				return result;
@@ -1278,7 +1279,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			return autowireConstructor(beanName, mbd, ctors, null);
 		}
 
-		// 简单的无参构造器实例化
+		// 简单的无参构造器实例化，使用 CGLIB 代理创建对象
 		// No special handling: simply use no-arg constructor.
 		return instantiateBean(beanName, mbd);
 	}
@@ -1381,7 +1382,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 						getAccessControlContext());
 			}
 			else {
-				// 默认的无参构造器实例化 bean
+				// 默认的无参构造器实例化 bean，通过 CGLIB 代理创建对象
 				beanInstance = getInstantiationStrategy().instantiate(mbd, beanName, this);
 			}
 			BeanWrapper bw = new BeanWrapperImpl(beanInstance);

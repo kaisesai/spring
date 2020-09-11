@@ -99,6 +99,7 @@ public abstract class FooServiceImpl implements FooService {
 
 	@Override
 	public boolean isInitCalled() {
+		System.out.println("调用 isInitCalled 方法！");
 		return this.initCalled;
 	}
 

@@ -38,6 +38,7 @@ class ThrowsAdviceAdapter implements AdvisorAdapter, Serializable {
 
 	@Override
 	public boolean supportsAdvice(Advice advice) {
+		// 一般不创建 ThrowsAdvice 类型的通知
 		return (advice instanceof ThrowsAdvice);
 	}
 

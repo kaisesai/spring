@@ -88,7 +88,7 @@ public class DefaultAdvisorAdapterRegistry implements AdvisorAdapterRegistry, Se
 	}
 
 	/**
-	 * 从戈丁的增强器中获取方法拦截器
+	 * 从给定的增强器中获取方法拦截器
 	 *
 	 * @param advisor the Advisor to find an interceptor for
 	 * @return
@@ -104,7 +104,7 @@ public class DefaultAdvisorAdapterRegistry implements AdvisorAdapterRegistry, Se
 			interceptors.add((MethodInterceptor) advice);
 		}
 		for (AdvisorAdapter adapter : this.adapters) {
-			// 三个适配器：前置通知、返回通知、异常通知
+			// 三个适配器：前置通知、返回通知、异常通知（一般不创建这个异常通知）
 			if (adapter.supportsAdvice(advice)) {
 				interceptors.add(adapter.getInterceptor(advisor));
 			}

@@ -44,6 +44,8 @@ import org.springframework.util.Assert;
 abstract class ParserStrategyUtils {
 
 	/**
+	 * 实例化一个类
+	 *
 	 * Instantiate a class using an appropriate constructor and return the new
 	 * instance as the specified assignable type. The returned instance will
 	 * have {@link BeanClassLoaderAware}, {@link BeanFactoryAware},

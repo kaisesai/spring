@@ -244,8 +244,10 @@ public abstract class AopUtils {
 		// 获取目标类的 Class 类型
 		Set<Class<?>> classes = new LinkedHashSet<>();
 		if (!Proxy.isProxyClass(targetClass)) {
+			// 获取原始类
 			classes.add(ClassUtils.getUserClass(targetClass));
 		}
+		// 获取类的所有接口
 		classes.addAll(ClassUtils.getAllInterfacesForClassAsSet(targetClass));
 
 		for (Class<?> clazz : classes) {
@@ -293,6 +295,7 @@ public abstract class AopUtils {
 			return ((IntroductionAdvisor) advisor).getClassFilter().matches(targetClass);
 		}
 		else if (advisor instanceof PointcutAdvisor) {
+			// InstantiationModelAwarePointcutAdvisorImpl
 			// 切点增强器
 			PointcutAdvisor pca = (PointcutAdvisor) advisor;
 			return canApply(pca.getPointcut(), targetClass, hasIntroductions);

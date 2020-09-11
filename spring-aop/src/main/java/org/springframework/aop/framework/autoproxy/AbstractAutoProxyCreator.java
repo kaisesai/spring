@@ -265,7 +265,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			}
 		}
 
-		// 这创建代理对象
+		// 如果我们一个自定义的目标源，那就创建代理对象。
+		// 禁止目标 bean 不必要的初始化。
+		// 这个目标源将会以自定义的方式处理目标实例。
 		// Create proxy here if we have a custom TargetSource.
 		// Suppresses unnecessary default instantiation of the target bean:
 		// The TargetSource will handle target instances in a custom fashion.
