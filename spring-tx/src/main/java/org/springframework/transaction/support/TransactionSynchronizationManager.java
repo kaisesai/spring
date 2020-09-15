@@ -33,6 +33,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * 事务同步管理器
+ *
  * Central delegate that manages resources and transaction synchronizations per thread.
  * To be used by resource management code but not by typical application code.
  *
@@ -137,6 +139,7 @@ public abstract class TransactionSynchronizationManager {
 	@Nullable
 	public static Object getResource(Object key) {
 		Object actualKey = TransactionSynchronizationUtils.unwrapResourceIfNecessary(key);
+		// 获取资源
 		Object value = doGetResource(actualKey);
 		if (value != null && logger.isTraceEnabled()) {
 			logger.trace("Retrieved value [" + value + "] for key [" + actualKey + "] bound to thread [" +
@@ -150,6 +153,7 @@ public abstract class TransactionSynchronizationManager {
 	 */
 	@Nullable
 	private static Object doGetResource(Object actualKey) {
+		// 从线程本地化中获取线程资源
 		Map<Object, Object> map = resources.get();
 		if (map == null) {
 			return null;
@@ -199,6 +203,8 @@ public abstract class TransactionSynchronizationManager {
 	}
 
 	/**
+	 * 根据给定的键，从当前线程中解绑一个资源
+	 *
 	 * Unbind a resource for the given key from the current thread.
 	 * @param key the key to unbind (usually the resource factory)
 	 * @return the previously bound value (usually the active resource object)
@@ -207,6 +213,7 @@ public abstract class TransactionSynchronizationManager {
 	 */
 	public static Object unbindResource(Object key) throws IllegalStateException {
 		Object actualKey = TransactionSynchronizationUtils.unwrapResourceIfNecessary(key);
+		// 执行解绑资源
 		Object value = doUnbindResource(actualKey);
 		if (value == null) {
 			throw new IllegalStateException(
@@ -235,6 +242,7 @@ public abstract class TransactionSynchronizationManager {
 		if (map == null) {
 			return null;
 		}
+		// 移除 key
 		Object value = map.remove(actualKey);
 		// Remove entire ThreadLocal if empty...
 		if (map.isEmpty()) {
@@ -275,6 +283,7 @@ public abstract class TransactionSynchronizationManager {
 			throw new IllegalStateException("Cannot activate transaction synchronization - already active");
 		}
 		logger.trace("Initializing transaction synchronization");
+		// 设置一个空的同步列表
 		synchronizations.set(new LinkedHashSet<>());
 	}
 
@@ -307,6 +316,7 @@ public abstract class TransactionSynchronizationManager {
 	 * @see TransactionSynchronization
 	 */
 	public static List<TransactionSynchronization> getSynchronizations() throws IllegalStateException {
+		// 获取当前线程中的全部的事务同步
 		Set<TransactionSynchronization> synchs = synchronizations.get();
 		if (synchs == null) {
 			throw new IllegalStateException("Transaction synchronization is not active");
@@ -318,6 +328,7 @@ public abstract class TransactionSynchronizationManager {
 			return Collections.emptyList();
 		}
 		else {
+			// 将事务同步进行排序
 			// Sort lazily here, not in registerSynchronization.
 			List<TransactionSynchronization> sortedSynchs = new ArrayList<>(synchs);
 			AnnotationAwareOrderComparator.sort(sortedSynchs);
@@ -335,6 +346,7 @@ public abstract class TransactionSynchronizationManager {
 			throw new IllegalStateException("Cannot deactivate transaction synchronization - not active");
 		}
 		logger.trace("Clearing transaction synchronization");
+		// 执行清理
 		synchronizations.remove();
 	}
 

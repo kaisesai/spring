@@ -17,6 +17,7 @@
 package org.springframework.transaction;
 
 /**
+ * 一个静态的未被修改的事务定义
  * A static unmodifiable transaction definition.
  *
  * @author Juergen Hoeller

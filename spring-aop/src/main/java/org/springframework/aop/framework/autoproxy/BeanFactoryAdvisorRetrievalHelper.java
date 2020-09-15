@@ -96,6 +96,7 @@ public class BeanFactoryAdvisorRetrievalHelper {
 				else {
 					try {
 						// 从 bean 工厂中查找 Advisor 类型的 bean
+						// spring tx 模块有一个 BeanFactoryTransactionAttributeSourceAdvisor 类
 						advisors.add(this.beanFactory.getBean(name, Advisor.class));
 					}
 					catch (BeanCreationException ex) {

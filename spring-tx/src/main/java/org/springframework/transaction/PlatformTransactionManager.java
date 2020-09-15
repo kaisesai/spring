@@ -19,6 +19,12 @@ package org.springframework.transaction;
 import org.springframework.lang.Nullable;
 
 /**
+ * 这是 spring 命令式基础事务的核心接口。应用程序可以直接使用，但它并不是主要 API：
+ * 通常，程序会通过事务模板或者通过 AOP 进行声明式事务来进行工作。
+ *
+ * 对于实现类，建议从提供的 AbstractPlatformTransactionManager 类开始，它预先定义了事务传播行为和事务同步处理。
+ * 子类必须实现基础事务的特定状态的模板方法。
+ *
  * This is the central interface in Spring's imperative transaction infrastructure.
  * Applications can use this directly, but it is not primarily meant as an API:
  * Typically, applications will work with either TransactionTemplate or
@@ -46,6 +52,12 @@ import org.springframework.lang.Nullable;
 public interface PlatformTransactionManager extends TransactionManager {
 
 	/**
+	 * 根据指定的传播行为，返回一个当前活跃的事务，或者创建一个新的事务。
+	 * 提示：像隔离级别或者超时的参数只能被应用到新的事务中，因此在参数活跃的事务的时候被忽略掉。
+	 * 此外，并非所有事务定义设置都支持每个事务管理器：一个正确的事务管理器应当在遇到不支持的设置时抛出异常。
+	 * 以上规则的一个例外就是只读标识，如果不支持显示只读模式，它应该被忽略。本质上，只读标识仅仅是一个
+	 * 潜在的优化提示。
+	 *
 	 * Return a currently active transaction or create a new one, according to
 	 * the specified propagation behavior.
 	 * <p>Note that parameters like isolation level or timeout will only be applied
@@ -72,6 +84,8 @@ public interface PlatformTransactionManager extends TransactionManager {
 			throws TransactionException;
 
 	/**
+	 * 提交事务
+	 *
 	 * Commit the given transaction, with regard to its status. If the transaction
 	 * has been marked rollback-only programmatically, perform a rollback.
 	 * <p>If the transaction wasn't a new one, omit the commit for proper
@@ -101,6 +115,8 @@ public interface PlatformTransactionManager extends TransactionManager {
 	void commit(TransactionStatus status) throws TransactionException;
 
 	/**
+	 * 回滚事务
+	 *
 	 * Perform a rollback of the given transaction.
 	 * <p>If the transaction wasn't a new one, just set it rollback-only for proper
 	 * participation in the surrounding transaction. If a previous transaction

@@ -17,6 +17,8 @@
 package org.springframework.transaction.support;
 
 /**
+ * 事务同步的实现类，它通过 TransactionSynchronizationManager 管理一个资源持有器
+ *
  * {@link TransactionSynchronization} implementation that manages a
  * {@link ResourceHolder} bound through {@link TransactionSynchronizationManager}.
  *
@@ -50,6 +52,7 @@ public abstract class ResourceHolderSynchronization<H extends ResourceHolder, K>
 	@Override
 	public void suspend() {
 		if (this.holderActive) {
+			// 挂起，释放资源，
 			TransactionSynchronizationManager.unbindResource(this.resourceKey);
 		}
 	}
@@ -57,6 +60,7 @@ public abstract class ResourceHolderSynchronization<H extends ResourceHolder, K>
 	@Override
 	public void resume() {
 		if (this.holderActive) {
+			// 绑定资源，数据库连接
 			TransactionSynchronizationManager.bindResource(this.resourceKey, this.resourceHolder);
 		}
 	}

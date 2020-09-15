@@ -16,26 +16,14 @@
 
 package org.springframework.transaction.annotation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import javax.sql.DataSource;
-
 import org.junit.jupiter.api.Test;
-
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.support.SimpleCacheManager;
-import org.springframework.context.annotation.AdviceMode;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.*;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -43,6 +31,12 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.interceptor.BeanFactoryTransactionAttributeSourceAdvisor;
 import org.springframework.transaction.testfixture.CallCountingTransactionManager;
+
+import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -142,9 +136,14 @@ class EnableTransactionManagementIntegrationTests {
 
 	private void assertTxProxying(AnnotationConfigApplicationContext ctx) {
 		FooRepository repo = ctx.getBean(FooRepository.class);
-		assertThat(isTxProxy(repo)).isTrue();
+
+		List<Object> all = repo.findAll();
+		System.out.println("all = " + all);
+
+
+		// assertThat(isTxProxy(repo)).isTrue();
 		// trigger a transaction
-		repo.findAll();
+		// repo.findAll();
 	}
 
 	private boolean isTxProxy(FooRepository repo) {
@@ -304,7 +303,7 @@ class EnableTransactionManagementIntegrationTests {
 	}
 
 
-	@Repository
+	// @Repository
 	static class JdbcFooRepository implements FooRepository {
 
 		public void setDataSource(DataSource dataSource) {
@@ -313,7 +312,13 @@ class EnableTransactionManagementIntegrationTests {
 		@Override
 		@Transactional
 		public List<Object> findAll() {
-			return Collections.emptyList();
+			ArrayList<Object> result = new ArrayList<>();
+			for (int i1 = 0; i1 < 10; i1++) {
+				int random = (int) (Math.random() * 100);
+				result.add(random);
+			}
+			return result;
+			// return Collections.emptyList();
 		}
 	}
 

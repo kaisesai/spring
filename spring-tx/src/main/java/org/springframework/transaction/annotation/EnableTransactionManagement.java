@@ -163,6 +163,8 @@ import org.springframework.core.Ordered;
 public @interface EnableTransactionManagement {
 
 	/**
+	 * 指定使用什么代理模式（true 为 cglib 代理，false 为 jdk 代理）
+	 *
 	 * Indicate whether subclass-based (CGLIB) proxies are to be created ({@code true}) as
 	 * opposed to standard Java interface-based proxies ({@code false}). The default is
 	 * {@code false}. <strong>Applicable only if {@link #mode()} is set to
@@ -177,6 +179,11 @@ public @interface EnableTransactionManagement {
 	boolean proxyTargetClass() default false;
 
 	/**
+	 * 通知的模式，代理模式或者 aspectj，一般是使用代理模式。
+	 * 注意代理模式只允许调用拦截，通过在本类中的本地调用不能被拦截；
+	 * 一个 Transactional 注解在一个本地调用的方法上将会被 spring 的拦截器忽略，甚至不会再这种场景中出现。
+	 * 对于拦截更多高级
+	 *
 	 * Indicate how transactional advice should be applied.
 	 * <p><b>The default is {@link AdviceMode#PROXY}.</b>
 	 * Please note that proxy mode allows for interception of calls through the proxy

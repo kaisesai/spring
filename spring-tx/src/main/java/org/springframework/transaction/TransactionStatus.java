@@ -19,6 +19,9 @@ package org.springframework.transaction;
 import java.io.Flushable;
 
 /**
+ * 事务状态的表示。
+ * 事务代码可以使用它来恢复事务状态，并且以编程化的方式请求一个回滚（而不是抛出隐式回滚的异常）
+ *
  * Representation of the status of a transaction.
  *
  * <p>Transactional code can use this to retrieve status information,

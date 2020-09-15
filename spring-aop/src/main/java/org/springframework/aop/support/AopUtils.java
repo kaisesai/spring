@@ -229,6 +229,7 @@ public abstract class AopUtils {
 			return false;
 		}
 
+		// spring tx 中的 TransactionAttributeSourcePointcut
 		// 方法匹配器
 		MethodMatcher methodMatcher = pc.getMethodMatcher();
 		if (methodMatcher == MethodMatcher.TRUE) {
@@ -257,6 +258,7 @@ public abstract class AopUtils {
 				// 遍历每个方法，判断是否匹配
 				if (introductionAwareMethodMatcher != null ?
 						introductionAwareMethodMatcher.matches(method, targetClass, hasIntroductions) :
+						// spring tx 是匹配这个方法
 						methodMatcher.matches(method, targetClass)) {
 					return true;
 				}
@@ -295,7 +297,8 @@ public abstract class AopUtils {
 			return ((IntroductionAdvisor) advisor).getClassFilter().matches(targetClass);
 		}
 		else if (advisor instanceof PointcutAdvisor) {
-			// InstantiationModelAwarePointcutAdvisorImpl
+			// spring tx 模块使用 BeanFactoryTransactionAttributeSourceAdvisor 实现了 PointcutAdvisor 接口，返回 TransactionAttributeSourcePointcut
+			// spring aop 中的 InstantiationModelAwarePointcutAdvisorImpl
 			// 切点增强器
 			PointcutAdvisor pca = (PointcutAdvisor) advisor;
 			return canApply(pca.getPointcut(), targetClass, hasIntroductions);

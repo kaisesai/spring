@@ -179,6 +179,7 @@ public abstract class DataSourceUtils {
 		Assert.notNull(con, "No Connection specified");
 
 		boolean debugEnabled = logger.isDebugEnabled();
+		// 设置只读标识
 		// Set read-only flag.
 		if (definition != null && definition.isReadOnly()) {
 			try {
@@ -201,6 +202,7 @@ public abstract class DataSourceUtils {
 			}
 		}
 
+		// 引用指定的隔离级别
 		// Apply specific isolation level, if any.
 		Integer previousIsolationLevel = null;
 		if (definition != null && definition.getIsolationLevel() != TransactionDefinition.ISOLATION_DEFAULT) {

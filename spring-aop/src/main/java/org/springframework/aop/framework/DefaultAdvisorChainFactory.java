@@ -75,7 +75,8 @@ public class DefaultAdvisorChainFactory implements AdvisorChainFactory, Serializ
 		// 遍历所有的增强器
 		for (Advisor advisor : advisors) {
 			if (advisor instanceof PointcutAdvisor) {
-				// 基本上属于 InstantiationModelAwarePointcutAdvisorImpl 这个类
+				// spring tx 有 BeanFactoryTransactionAttributeSourceAdvisor 类
+				// spring aop 基本上属于 InstantiationModelAwarePointcutAdvisorImpl 这个类
 				// Add it conditionally.
 				PointcutAdvisor pointcutAdvisor = (PointcutAdvisor) advisor;
 				if (config.isPreFiltered() || pointcutAdvisor.getPointcut().getClassFilter().matches(actualClass)) {
