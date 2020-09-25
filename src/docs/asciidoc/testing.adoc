@@ -8442,7 +8442,6 @@ https://github.com/spring-projects/spring-framework/tree/master/spring-test/src/
 tests] of client-side REST tests.
 
 
-
 [[testing-resources]]
 == Further Resources
 See the following resources for more information about testing:
