@@ -464,7 +464,8 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			return;
 		}
 		if (IN_NATIVE_IMAGE) {
-			throw new BeanDefinitionStoreException("@Configuration classes need to be marked as proxyBeanMethods=false. Found: " + configBeanDefs.keySet());
+			throw new BeanDefinitionStoreException("@Configuration classes need to be marked as " +
+					"proxyBeanMethods=false. Found: " + configBeanDefs.keySet());
 		}
 
 		// 创建一个配置类增强器
