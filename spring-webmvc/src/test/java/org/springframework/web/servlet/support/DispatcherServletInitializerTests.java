@@ -56,6 +56,33 @@ public class DispatcherServletInitializerTests {
 	private final Map<String, MockServletRegistration> registrations = new LinkedHashMap<>(2);
 
 
+
+	@Test
+	public void testSpringMvcStartup() throws ServletException {
+		// spring
+		initializer.onStartup(servletContext);
+
+		assertThat(servlets.size()).isEqualTo(1);
+		assertThat(servlets.get(SERVLET_NAME)).isNotNull();
+
+		DispatcherServlet servlet = (DispatcherServlet) servlets.get(SERVLET_NAME);
+		assertThat(servlet.getClass()).isEqualTo(MyDispatcherServlet.class);
+		WebApplicationContext servletContext = servlet.getWebApplicationContext();
+
+		assertThat(servletContext.containsBean("bean")).isTrue();
+		boolean condition = servletContext.getBean("bean") instanceof MyBean;
+		assertThat(condition).isTrue();
+
+		assertThat(registrations.size()).isEqualTo(1);
+		assertThat(registrations.get(SERVLET_NAME)).isNotNull();
+
+		MockServletRegistration registration = registrations.get(SERVLET_NAME);
+		assertThat(registration.getMappings()).isEqualTo(Collections.singleton(SERVLET_MAPPING));
+		assertThat(registration.getLoadOnStartup()).isEqualTo(1);
+		assertThat(registration.getRunAsRole()).isEqualTo(ROLE_NAME);
+	}
+
+
 	@Test
 	public void register() throws ServletException {
 		initializer.onStartup(servletContext);

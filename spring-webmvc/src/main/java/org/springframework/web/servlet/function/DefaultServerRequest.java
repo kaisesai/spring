@@ -196,6 +196,7 @@ class DefaultServerRequest implements ServerRequest {
 	private <T> T bodyInternal(Type bodyType, Class<?> bodyClass) throws ServletException, IOException {
 		MediaType contentType = this.headers.contentType().orElse(MediaType.APPLICATION_OCTET_STREAM);
 
+		// 消息转换器转化消息
 		for (HttpMessageConverter<?> messageConverter : this.messageConverters) {
 			if (messageConverter instanceof GenericHttpMessageConverter) {
 				GenericHttpMessageConverter<T> genericMessageConverter =

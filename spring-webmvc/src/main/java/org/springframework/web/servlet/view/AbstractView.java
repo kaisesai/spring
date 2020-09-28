@@ -343,6 +343,7 @@ public abstract class AbstractView extends WebApplicationObjectSupport implement
 
 		// Expose RequestContext?
 		if (this.requestContextAttribute != null) {
+			// 创建一个请求上下文？
 			mergedModel.put(this.requestContextAttribute, createRequestContext(request, response, mergedModel));
 		}
 
@@ -362,7 +363,7 @@ public abstract class AbstractView extends WebApplicationObjectSupport implement
 	 */
 	protected RequestContext createRequestContext(
 			HttpServletRequest request, HttpServletResponse response, Map<String, Object> model) {
-
+		// 请求上下文
 		return new RequestContext(request, response, getServletContext(), model);
 	}
 

@@ -16,10 +16,13 @@
 
 package org.springframework.web.context;
 
+import java.io.IOException;
 import java.util.Locale;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.BeansException;
@@ -34,7 +37,15 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.testfixture.AbstractApplicationContextTests;
 import org.springframework.context.testfixture.beans.TestApplicationListener;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.support.XmlWebApplicationContext;
+import org.springframework.web.servlet.ComplexWebApplicationContext;
+import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.SimpleWebApplicationContext;
+import org.springframework.web.testfixture.servlet.MockHttpServletRequest;
+import org.springframework.web.testfixture.servlet.MockHttpServletResponse;
+import org.springframework.web.testfixture.servlet.MockServletConfig;
 import org.springframework.web.testfixture.servlet.MockServletContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,22 +57,43 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class XmlWebApplicationContextTests extends AbstractApplicationContextTests {
 
+
+	private static final String URL_KNOWN_ONLY_PARENT = "/knownOnlyToParent.do";
+
+	private MockServletConfig servletConfig;
+
 	private ConfigurableWebApplicationContext root;
+
+	private XmlWebApplicationContext wac;
+
+
+	private ServletContext getServletContext() {
+		return servletConfig.getServletContext();
+	}
+
 
 	@Override
 	protected ConfigurableApplicationContext createContext() throws Exception {
 		InitAndIB.constructed = false;
+		// 创建 Root 容器
 		root = new XmlWebApplicationContext();
 		root.getEnvironment().addActiveProfile("rootProfile1");
+		// 创建一个 ServletContext
 		MockServletContext sc = new MockServletContext("");
+		servletConfig = new MockServletConfig(sc, "simple");
+
 		root.setServletContext(sc);
+		// 设置配置文件路径
 		root.setConfigLocations("/org/springframework/web/context/WEB-INF/applicationContext.xml");
+		// 添加 bean 工厂后置处理器
 		root.addBeanFactoryPostProcessor(new BeanFactoryPostProcessor() {
 			@Override
 			public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+				// 添加后置处理器
 				beanFactory.addBeanPostProcessor(new BeanPostProcessor() {
 					@Override
 					public Object postProcessBeforeInitialization(Object bean, String name) throws BeansException {
+						// 在 bean 初始化之前，对 TestBean 类型的 bean 添加 friends 属性
 						if (bean instanceof TestBean) {
 							((TestBean) bean).getFriends().add("myFriend");
 						}
@@ -74,15 +106,52 @@ public class XmlWebApplicationContextTests extends AbstractApplicationContextTes
 				});
 			}
 		});
+		// 初始化容器
 		root.refresh();
-		XmlWebApplicationContext wac = new XmlWebApplicationContext();
+		// 创建一个 web 子容器
+		// XmlWebApplicationContext wac = new XmlWebApplicationContext();
+		wac = new XmlWebApplicationContext();
+		// 为子容器设置环境激活属性
 		wac.getEnvironment().addActiveProfile("wacProfile1");
+		// 为子容器设置父容器
 		wac.setParent(root);
+		// 设置 ServletContext
 		wac.setServletContext(sc);
+		// 设命名空间
 		wac.setNamespace("test-servlet");
+		// 设置配置文件路径
 		wac.setConfigLocations("/org/springframework/web/context/WEB-INF/test-servlet.xml");
 		wac.refresh();
 		return wac;
+	}
+
+
+	@Test
+	public void testSpringMvc() throws ServletException, IOException {
+		// 创建一个
+		DispatcherServlet dispatcherServlet = new DispatcherServlet(wac);
+		// 设置 web 容器
+		dispatcherServlet.init(servletConfig);
+
+		MockHttpServletRequest request = new MockHttpServletRequest(getServletContext(), "GET", "/controller/hello?name=123");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		dispatcherServlet.service(request, response);
+
+		String contentAsString = response.getContentAsString();
+		System.out.println("contentAsString = " + contentAsString);
+
+		dispatcherServlet.destroy();
+	}
+
+
+	@RequestMapping(value = "/controller")
+	public static class MyController {
+
+		@GetMapping(value = "/hello")
+		public String hello(String name){
+			System.out.println("name="+name);
+			return "hello "+name+"!";
+		}
 	}
 
 	@Test

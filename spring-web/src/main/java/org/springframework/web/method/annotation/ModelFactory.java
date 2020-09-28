@@ -109,6 +109,7 @@ public final class ModelFactory {
 
 		Map<String, ?> sessionAttributes = this.sessionAttributesHandler.retrieveAttributes(request);
 		container.mergeAttributes(sessionAttributes);
+		// 执行 model 属性方法
 		invokeModelAttributeMethods(request, container);
 
 		for (String name : findSessionAttributeArguments(handlerMethod)) {
@@ -123,6 +124,8 @@ public final class ModelFactory {
 	}
 
 	/**
+	 * 执行 model 属性方法
+	 *
 	 * Invoke model attribute methods to populate the model.
 	 * Attributes are added only if not already present in the model.
 	 */
@@ -140,6 +143,7 @@ public final class ModelFactory {
 				continue;
 			}
 
+			// 执行请求
 			Object returnValue = modelMethod.invokeForRequest(request, container);
 			if (modelMethod.isVoid()) {
 				if (StringUtils.hasText(ann.value())) {

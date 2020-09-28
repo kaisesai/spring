@@ -85,11 +85,13 @@ public class DispatcherServletTests {
 
 	@BeforeEach
 	public void setUp() throws ServletException {
+		// 配置 ServletConfig 配置
 		MockServletConfig complexConfig = new MockServletConfig(getServletContext(), "complex");
 		complexConfig.addInitParameter("publishContext", "false");
 		complexConfig.addInitParameter("class", "notWritable");
 		complexConfig.addInitParameter("unknownParam", "someValue");
 
+		// 配置 DispatcherServlet
 		simpleDispatcherServlet = new DispatcherServlet();
 		simpleDispatcherServlet.setContextClass(SimpleWebApplicationContext.class);
 		simpleDispatcherServlet.init(servletConfig);
@@ -104,6 +106,27 @@ public class DispatcherServletTests {
 	private ServletContext getServletContext() {
 		return servletConfig.getServletContext();
 	}
+
+
+	@Test
+	public void testSpringMvc() throws ServletException, IOException {
+		// 创建一个 Root 容器
+		DispatcherServlet complexDispatcherServlet = new DispatcherServlet();
+		complexDispatcherServlet.setContextClass(ComplexWebApplicationContext.class);
+		complexDispatcherServlet.setNamespace("test");
+		complexDispatcherServlet.init(new MockServletConfig(getServletContext(), "complex"));
+
+		MockHttpServletRequest request = new MockHttpServletRequest(getServletContext(), "GET", "/servlet.do");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		complexDispatcherServlet.service(request, response);
+		assertThat(response.getContentAsString()).isEqualTo("body");
+
+		request = new MockHttpServletRequest(getServletContext(), "GET", "/form.do");
+		response = new MockHttpServletResponse();
+		complexDispatcherServlet.service(request, response);
+	}
+
+
 
 	@Test
 	public void configuredDispatcherServlets() {

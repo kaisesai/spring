@@ -137,16 +137,20 @@ public abstract class RequestMappingInfoHandlerMapping extends AbstractHandlerMe
 	protected void handleMatch(RequestMappingInfo info, String lookupPath, HttpServletRequest request) {
 		super.handleMatch(info, lookupPath, request);
 
+		// 处理器撇皮
 		RequestCondition<?> condition = info.getActivePatternsCondition();
 		if (condition instanceof PathPatternsRequestCondition) {
+			// 扩展匹配详情
 			extractMatchDetails((PathPatternsRequestCondition) condition, lookupPath, request);
 		}
 		else {
+			// 扩展匹配详情
 			extractMatchDetails((PatternsRequestCondition) condition, lookupPath, request);
 		}
 
 		if (!info.getProducesCondition().getProducibleMediaTypes().isEmpty()) {
 			Set<MediaType> mediaTypes = info.getProducesCondition().getProducibleMediaTypes();
+			// 设置请求属性
 			request.setAttribute(PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE, mediaTypes);
 		}
 	}
@@ -176,6 +180,7 @@ public abstract class RequestMappingInfoHandlerMapping extends AbstractHandlerMe
 	private void extractMatchDetails(
 			PatternsRequestCondition condition, String lookupPath, HttpServletRequest request) {
 
+		// 扩展匹配详情，设置请求属性
 		String bestPattern;
 		Map<String, String> uriVariables;
 		if (condition.isEmptyPathMapping()) {
@@ -236,6 +241,7 @@ public abstract class RequestMappingInfoHandlerMapping extends AbstractHandlerMe
 	protected HandlerMethod handleNoMatch(
 			Set<RequestMappingInfo> infos, String lookupPath, HttpServletRequest request) throws ServletException {
 
+		// 匹配器
 		PartialMatchHelper helper = new PartialMatchHelper(infos, request);
 		if (helper.isEmpty()) {
 			return null;

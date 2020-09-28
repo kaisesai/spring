@@ -42,6 +42,7 @@ public class HttpRequestHandlerAdapter implements HandlerAdapter {
 
 	@Override
 	public boolean supports(Object handler) {
+		// 判断 handler 是否 HttpRequestHandler 子类
 		return (handler instanceof HttpRequestHandler);
 	}
 
@@ -49,7 +50,7 @@ public class HttpRequestHandlerAdapter implements HandlerAdapter {
 	@Nullable
 	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-
+		// 将处理器强转为 HttpRequestHandler，执行请求 handleRequest
 		((HttpRequestHandler) handler).handleRequest(request, response);
 		return null;
 	}

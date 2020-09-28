@@ -5,10 +5,12 @@
 
 <beans>
 
+	<!--资源文件-->
 	<import resource="resources/messageSource.xml"/>
 
 	<import resource="/resources/../resources/themeSource.xml"/>
 
+	<!--生命周期后置处理器-->
 	<bean id="lifecyclePostProcessor" class="org.springframework.beans.testfixture.beans.LifecycleBean$PostProcessor"/>
 
 	<!--
@@ -25,12 +27,15 @@
 	</bean>
 	-->
 
+	<!--容器监听器-->
 	<bean id="beanThatListens" class="org.springframework.context.testfixture.beans.BeanThatListens"/>
 
+	<!--测试容器监听器类-->
 	<bean id="parentListener" class="org.springframework.context.testfixture.beans.TestApplicationListener"/>
 
 	<!-- Inherited tests -->
 
+	<!--普通的 POJO 类的创建与属性设置-->
 	<!-- name and age values will be overridden by myinit.properties" -->
 	<bean id="rod" class="org.springframework.beans.testfixture.beans.TestBean">
 		<property name="name">
@@ -43,11 +48,13 @@
 
 	<!--
 			Tests of lifecycle callbacks
+			测试 bean 工厂初始化
 		-->
 	<bean id="mustBeInitialized"
 		class="org.springframework.beans.testfixture.beans.MustBeInitialized">
 	</bean>
 
+	<!--测试 spring 容器生命周期-->
 	<bean id="lifecycle"
 		  class="org.springframework.context.LifecycleContextBean"
 		  init-method="declaredInitMethod">
@@ -56,12 +63,14 @@
 
 	&contextInclude;
 
+	<!--属性重写配置-->
 	<bean id="myOverride" class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
 		<property name="location">
 			<value>/org/springframework/web/context/WEB-INF/myoverride.properties</value>
 		</property>
 	</bean>
 
+	<!--属性占位符配置器-->
 	<bean id="myPlaceholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
@@ -72,6 +81,7 @@
 		</property>
 	</bean>
 
+	<!--懒加载的 bean-->
 	<bean id="init-and-ib"
 		class="org.springframework.web.context.XmlWebApplicationContextTests$InitAndIB"
 		lazy-init="true"

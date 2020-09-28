@@ -74,7 +74,9 @@ public class AnnotationConfigDispatcherServletInitializerTests {
 
 	@BeforeEach
 	public void setUp() throws Exception {
+		// 初始化 servlet 上下文
 		servletContext = new MyMockServletContext();
+		// 初始化 web 应用程序初始化器
 		initializer = new MyAnnotationConfigDispatcherServletInitializer();
 		servlets = new LinkedHashMap<>(1);
 		servletRegistrations = new LinkedHashMap<>(1);
@@ -84,16 +86,20 @@ public class AnnotationConfigDispatcherServletInitializerTests {
 
 	@Test
 	public void register() throws ServletException {
+		// web 应用程序初始化器启动
 		initializer.onStartup(servletContext);
 
 		assertThat(servlets.size()).isEqualTo(1);
 		assertThat(servlets.get(SERVLET_NAME)).isNotNull();
 
 		DispatcherServlet servlet = (DispatcherServlet) servlets.get(SERVLET_NAME);
+		// 获取 web 子容器
 		WebApplicationContext wac = servlet.getWebApplicationContext();
+		// 执行刷新，容器初始化
 		((AnnotationConfigWebApplicationContext) wac).refresh();
 
 		assertThat(wac.containsBean("bean")).isTrue();
+		// 从容器中获取 bean
 		boolean condition = wac.getBean("bean") instanceof MyBean;
 		assertThat(condition).isTrue();
 

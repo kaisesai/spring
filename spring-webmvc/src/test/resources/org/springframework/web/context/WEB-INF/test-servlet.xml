@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "https://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
 
-<beans>
+
 
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basename"><value>org/springframework/web/context/WEB-INF/test-messages</value></property>
@@ -55,5 +59,11 @@
 	</bean>
 
 	<bean id="validEmpty" class="org.springframework.beans.testfixture.beans.TestBean"/>
+
+
+	<!--springmvc 控制器-->
+	<!--<mvc:annotation-driven />-->
+
+	<!--<bean id="myController" class="org.springframework.web.context.XmlWebApplicationContextTests.MyController"></bean>-->
 
 </beans>

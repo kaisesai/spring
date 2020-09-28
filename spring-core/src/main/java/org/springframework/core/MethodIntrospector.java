@@ -56,10 +56,14 @@ public final class MethodIntrospector {
 	 * or an empty map in case of no match
 	 */
 	public static <T> Map<Method, T> selectMethods(Class<?> targetType, final MetadataLookup<T> metadataLookup) {
+		// 方法映射
 		final Map<Method, T> methodMap = new LinkedHashMap<>();
+		// 处理器类型
 		Set<Class<?>> handlerTypes = new LinkedHashSet<>();
+		// 指定的处理类型
 		Class<?> specificHandlerType = null;
 
+		// 代理对象
 		if (!Proxy.isProxyClass(targetType)) {
 			specificHandlerType = ClassUtils.getUserClass(targetType);
 			handlerTypes.add(specificHandlerType);
@@ -70,11 +74,15 @@ public final class MethodIntrospector {
 			final Class<?> targetClass = (specificHandlerType != null ? specificHandlerType : currentHandlerType);
 
 			ReflectionUtils.doWithMethods(currentHandlerType, method -> {
+				// 获取指定方法
 				Method specificMethod = ClassUtils.getMostSpecificMethod(method, targetClass);
+				// 检查结果
 				T result = metadataLookup.inspect(specificMethod);
 				if (result != null) {
+					// 桥接方法
 					Method bridgedMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
 					if (bridgedMethod == specificMethod || metadataLookup.inspect(bridgedMethod) == null) {
+						// 添加指定方法与结果
 						methodMap.put(specificMethod, result);
 					}
 				}

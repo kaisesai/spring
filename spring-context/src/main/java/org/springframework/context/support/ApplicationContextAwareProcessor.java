@@ -102,6 +102,7 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 			}, acc);
 		}
 		else {
+			// 执行实现了各种 Aware 接口的 bean 类
 			invokeAwareInterfaces(bean);
 		}
 
@@ -128,6 +129,7 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 			((ApplicationStartupAware) bean).setApplicationStartup(this.applicationContext.getApplicationStartup());
 		}
 		if (bean instanceof ApplicationContextAware) {
+			// 设置上下文容器
 			((ApplicationContextAware) bean).setApplicationContext(this.applicationContext);
 		}
 	}

@@ -57,14 +57,23 @@ public abstract class AbstractDispatcherServletInitializer extends AbstractConte
 	 */
 	public static final String DEFAULT_SERVLET_NAME = "dispatcher";
 
-
+	/**
+	 * 启动
+	 *
+	 * @param servletContext
+	 * @throws ServletException
+	 */
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
+		// 启动容器，创建 Root web 容器
 		super.onStartup(servletContext);
+		// 注册 DispatcherServlet，web 子容器
 		registerDispatcherServlet(servletContext);
 	}
 
 	/**
+	 * 通过给定的 ServletContext 来注册 DispatcherServlet
+	 *
 	 * Register a {@link DispatcherServlet} against the given servlet context.
 	 * <p>This method will create a {@code DispatcherServlet} with the name returned by
 	 * {@link #getServletName()}, initializing it with the application context returned
@@ -76,33 +85,44 @@ public abstract class AbstractDispatcherServletInitializer extends AbstractConte
 	 * @param servletContext the context to register the servlet against
 	 */
 	protected void registerDispatcherServlet(ServletContext servletContext) {
+		// 获取 servlet 名称
 		String servletName = getServletName();
 		Assert.hasLength(servletName, "getServletName() must not return null or empty");
 
+		// 创建一个 web 应用程序子容器
 		WebApplicationContext servletAppContext = createServletApplicationContext();
 		Assert.notNull(servletAppContext, "createServletApplicationContext() must not return null");
 
+		// 创建一个 servlet
 		FrameworkServlet dispatcherServlet = createDispatcherServlet(servletAppContext);
 		Assert.notNull(dispatcherServlet, "createDispatcherServlet(WebApplicationContext) must not return null");
+		// 设置 servlet 容器初始化参数
 		dispatcherServlet.setContextInitializers(getServletApplicationContextInitializers());
 
+		// 把 servlet 添加到 Tomcat 容器中。
 		ServletRegistration.Dynamic registration = servletContext.addServlet(servletName, dispatcherServlet);
 		if (registration == null) {
 			throw new IllegalStateException("Failed to register servlet with name '" + servletName + "'. " +
 					"Check if there is another servlet registered under the same name.");
 		}
 
+		// 设置启动
 		registration.setLoadOnStartup(1);
+		// 添加 servlet 映射
 		registration.addMapping(getServletMappings());
+		// 设置异步支撑
 		registration.setAsyncSupported(isAsyncSupported());
 
+		// 获取所有的过滤器
 		Filter[] filters = getServletFilters();
 		if (!ObjectUtils.isEmpty(filters)) {
 			for (Filter filter : filters) {
+				// 注册过滤器到 Tomcat 中
 				registerServletFilter(servletContext, filter);
 			}
 		}
 
+		// 自定义注册
 		customizeRegistration(registration);
 	}
 
@@ -126,12 +146,15 @@ public abstract class AbstractDispatcherServletInitializer extends AbstractConte
 	protected abstract WebApplicationContext createServletApplicationContext();
 
 	/**
+	 * 创建一个 DispatcherServlet
+	 *
 	 * Create a {@link DispatcherServlet} (or other kind of {@link FrameworkServlet}-derived
 	 * dispatcher) with the specified {@link WebApplicationContext}.
 	 * <p>Note: This allows for any {@link FrameworkServlet} subclass as of 4.2.3.
 	 * Previously, it insisted on returning a {@link DispatcherServlet} or subclass thereof.
 	 */
 	protected FrameworkServlet createDispatcherServlet(WebApplicationContext servletAppContext) {
+		// 创建一个 DispatcherServlet
 		return new DispatcherServlet(servletAppContext);
 	}
 

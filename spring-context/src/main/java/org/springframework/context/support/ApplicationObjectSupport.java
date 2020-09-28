@@ -75,6 +75,7 @@ public abstract class ApplicationObjectSupport implements ApplicationContextAwar
 			}
 			this.applicationContext = context;
 			this.messageSourceAccessor = new MessageSourceAccessor(context);
+			// 初始化容器
 			initApplicationContext(context);
 		}
 		else {
@@ -156,6 +157,7 @@ public abstract class ApplicationObjectSupport implements ApplicationContextAwar
 	 * @since 5.0
 	 */
 	protected final ApplicationContext obtainApplicationContext() {
+		// 获取哦 web 容器，是 root 还是子容器呢？
 		ApplicationContext applicationContext = getApplicationContext();
 		Assert.state(applicationContext != null, "No ApplicationContext");
 		return applicationContext;

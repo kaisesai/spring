@@ -122,6 +122,8 @@ public abstract class AbstractMessageConverterMethodArgumentResolver implements 
 
 
 	/**
+	 * 获取请求响应 bodyAdvice 链
+	 *
 	 * Return the configured {@link RequestBodyAdvice} and
 	 * {@link RequestBodyAdvice} where each instance may be wrapped as a
 	 * {@link org.springframework.web.method.ControllerAdviceBean ControllerAdviceBean}.
@@ -150,6 +152,8 @@ public abstract class AbstractMessageConverterMethodArgumentResolver implements 
 	}
 
 	/**
+	 * 消息转换器进行参数解析转化
+	 *
 	 * Create the method argument value of the expected parameter type by reading
 	 * from the given HttpInputMessage.
 	 * @param <T> the expected type of the argument value to be created
@@ -193,6 +197,7 @@ public abstract class AbstractMessageConverterMethodArgumentResolver implements 
 		try {
 			message = new EmptyBodyCheckingHttpInputMessage(inputMessage);
 
+			// 通过消息转换器转化消息
 			for (HttpMessageConverter<?> converter : this.messageConverters) {
 				Class<HttpMessageConverter<?>> converterType = (Class<HttpMessageConverter<?>>) converter.getClass();
 				GenericHttpMessageConverter<?> genericConverter =
@@ -200,13 +205,16 @@ public abstract class AbstractMessageConverterMethodArgumentResolver implements 
 				if (genericConverter != null ? genericConverter.canRead(targetType, contextClass, contentType) :
 						(targetClass != null && converter.canRead(targetClass, contentType))) {
 					if (message.hasBody()) {
+						// 获取 body 通知，在 body 读取前执行
 						HttpInputMessage msgToUse =
 								getAdvice().beforeBodyRead(message, parameter, targetType, converterType);
 						body = (genericConverter != null ? genericConverter.read(targetType, contextClass, msgToUse) :
 								((HttpMessageConverter<T>) converter).read(targetClass, msgToUse));
+						// 获取 body 通知，在 body 读取后执行
 						body = getAdvice().afterBodyRead(body, msgToUse, parameter, targetType, converterType);
 					}
 					else {
+						// 获取 body 通知，处理空 body
 						body = getAdvice().handleEmptyBody(null, message, parameter, targetType, converterType);
 					}
 					break;
